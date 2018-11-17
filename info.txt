@@ -1,0 +1,10 @@
+Belén Solla Sanz & Dorian Sanz Bruno
+
+Funcionalidades adicionales:
+	- paso de niveles
+	- mostrar el tiempo por pantalla
+	- registro del top10
+
+Cosas que no funcionan:
+	- la clase que maneja el top10 produce una excepción en el método que 
+	  escribe en el fichero. El problema salta con el uso de iteradores

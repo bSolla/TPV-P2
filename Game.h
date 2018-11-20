@@ -2,6 +2,7 @@
 #include <iostream>
 #include <new>
 #include <string>
+#include <list>
 #include "checkML.h"
 #include "Utilities.h"
 #include "Texture.h"
@@ -14,41 +15,14 @@
 #include "ArkanoidObject.h"
 
 
-// ---------------------- constants -----------------------------------------------------
-const uint WIN_WIDTH = 800;
-const uint WIN_HEIGHT = 600;
-const uint WIN_X = SDL_WINDOWPOS_CENTERED;
-const uint WIN_Y = SDL_WINDOWPOS_CENTERED;
-
-const uint NUM_TEXTURES = 5;
-const uint NUM_WALLS = 3;
-
-const uint DELAY = 60;
-const uint MILLISECONDS_IN_A_TICK = 1000;
-
-const string IMAGES_PATH = "images\\";
-const TextureAttributes TEXTURE_ATTRIBUTES[NUM_TEXTURES] = 
-	{	{ "ball.png", 1, 1 },
-		{ "bricks.png", 3, 2 },
-		{ "paddle.png", 1, 1 },
-		{ "side.png", 1, 1 },
-		{ "topSide.png", 1, 1 }
-	};
-
-
-const string LEVEL_SHARED_NAME = "level0";
-const string LEVEL_EXTENSION = ".ark";
-const uint MAX_LEVEL = 3;
-
-
-
 class Game {
 // --------------------- variables------------------------------------------------------
 private: 
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 
-	//ArkanoidObject* walls[NUM_WALLS];
+	list<ArkanoidObject*> gameObjects;
+	Wall* walls[NUM_WALLS];
 	Texture* textures[NUM_TEXTURES]; 
 	BlocksMap* map = nullptr;
 	Ball* ball = nullptr;

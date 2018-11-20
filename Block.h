@@ -3,6 +3,7 @@
 #include "Vector2D.h"
 #include "Texture.h"
 #include "Utilities.h"
+#include "ArkanoidObject.h"
 
 class Game;
 
@@ -32,5 +33,10 @@ public:
 
 	// initializes the block position according to the matrix row and column index (the [c][r]) 
 	void setPosition (uint matrixColumnIndex, uint matrixRowIndex);
+
+	virtual void loadFromFile () {}
+	virtual void saveToFile () {}
+	virtual void update () {}
+	virtual void handleEvents(SDL_Event &e) {}
 };
 

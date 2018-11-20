@@ -32,6 +32,6 @@ public:
 	virtual void loadFromFile ();
 	virtual void saveToFile ();
 	virtual void update () {}
-	virtual void handleEvents() {}
+	virtual void handleEvents(SDL_Event &e) {}
 };
 

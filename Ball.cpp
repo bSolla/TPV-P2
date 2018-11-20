@@ -20,10 +20,8 @@ void Ball::setInitialPosition (int mapWidth, int verticalOffset) {
 }
 
 
-void Ball::render () const {
-	SDL_Rect destRect { position.getX (), position.getY (), cellSize, cellSize };
-
-	texture->render (destRect);
+void Ball::render () {
+	ArkanoidObject::render ();
 }
 
 

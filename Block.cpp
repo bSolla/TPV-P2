@@ -7,13 +7,13 @@ Block::Block (Game *gamePtr, int colorIndex) {
 
 	colorIndex--; // the max. color index in the file is 6 instead of 5, bc it starts with 1 
 	setColor (BlockColor(colorIndex));
-	blockTexture = game->getTexture (TextureNames::bricks);
+	texture = game->getTexture (TextureNames::bricks);
 }
 
 
 Block::~Block () {
 	game = nullptr;
-	blockTexture = nullptr;
+	texture = nullptr;
 }
 
 
@@ -30,8 +30,6 @@ void Block::setPosition (uint matrixColumnIndex, uint matrixRowIndex) {
 }
 
 
-void Block::render () const {
-	SDL_Rect destRect { position.getX (), position.getY (), width, height };
-
-	blockTexture->renderFrame (destRect, row, col);
+void Block::render () {
+	texture->renderFrame (getRect(), row, col);
 }

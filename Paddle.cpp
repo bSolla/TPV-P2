@@ -16,9 +16,8 @@ Paddle::~Paddle () {
 }
 
 
-void Paddle::render() const {
-	SDL_Rect destRect{ position.getX(), position.getY(), width, height };
-	texture->render(destRect);
+void Paddle::render() {
+	ArkanoidObject::render ();
 }
 
 

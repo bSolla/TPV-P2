@@ -2,22 +2,17 @@
 #include "checkML.h"
 #include "Vector2D.h"
 #include "Texture.h"
-
+#include "ArkanoidObject.h"
 
 class Game; 
 
 enum WallType { topW, rightW, leftW};
 const double WINDOW_ORIGIN = 0.0;
 
-class Wall {
+class Wall : public ArkanoidObject{
 // --------------------- variables------------------------------------------------------
 private:
-	int width, height, mapWidth;
-	Vector2D position;
 	Vector2D collisionVector { 0.0, 0.0 };
-
-	Texture* wallTexture = nullptr;
-	Game* game = nullptr;
 
 // ---------------------- methods ------------------------------------------------------
 public:
@@ -30,8 +25,13 @@ public:
 	void setVectors (WallType type);
 
 	// renders the wall
-	void render () const;
+	virtual void render ();
 	// checks if the ball collides with the wall and if so, returns the collision vector 
 	bool collides (SDL_Rect ballRect, Vector2D &collVector);
+
+	virtual void loadFromFile ();
+	virtual void saveToFile ();
+	virtual void update () {}
+	virtual void handleEvents() {}
 };
 

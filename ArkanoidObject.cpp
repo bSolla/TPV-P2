@@ -11,8 +11,14 @@ ArkanoidObject::ArkanoidObject(Game* gameptr, int posX, int posY, int objectWidt
 	texture = game->getTexture(textureName);
 }
 
-void ArkanoidObject::saveFromFile() {};
 
-void ArkanoidObject::loadFromFile() {};
+void ArkanoidObject::render (){
+	texture->render (getRect ());
+}
 
-void ArkanoidObject::getRect() {};
+
+SDL_Rect ArkanoidObject::getRect () {
+	SDL_Rect rect { position.getX (), position.getY (), width, height };
+
+	return rect;
+}

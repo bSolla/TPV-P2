@@ -3,6 +3,7 @@
 #include <new>
 #include <string>
 #include "checkML.h"
+#include "Utilities.h"
 #include "Texture.h"
 #include "Ball.h"
 #include "BlocksMap.h"
@@ -10,15 +11,8 @@
 #include "Wall.h"
 #include "InfoBar.h"
 #include "PlayerDataManager.h"
+#include "ArkanoidObject.h"
 
-// ------------------ type definitions ---------------------------------------------------
-struct TextureAttributes {
-	string filename;
-	uint cols;
-	uint rows;
-};
-// added the underscores after ball and paddle to avoid mixing them with the variables ball and paddle
-enum TextureNames { ball_, bricks, paddle_, sideWall, topWall };
 
 // ---------------------- constants -----------------------------------------------------
 const uint WIN_WIDTH = 800;
@@ -54,7 +48,7 @@ private:
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 
-	Wall* walls[NUM_WALLS];
+	//ArkanoidObject* walls[NUM_WALLS];
 	Texture* textures[NUM_TEXTURES]; 
 	BlocksMap* map = nullptr;
 	Ball* ball = nullptr;

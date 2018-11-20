@@ -2,23 +2,18 @@
 #include "checkML.h"
 #include "Vector2D.h"
 #include "Texture.h"
+#include "Utilities.h"
 
 class Game;
 
 enum BlockColor { blue, green, red, yellow, black, purple};
 
-const uint WALL_THICKNESS = 20;
 
-class Block {
+class Block : public ArkanoidObject{
 // --------------------- variables------------------------------------------------------
 private:
-	Vector2D position; // position in the map
-	int width = 60, height = 20;
 	int row, col; // position in the sprite sheet
 	BlockColor color;
-
-	Texture* blockTexture = nullptr;
-	Game* game = nullptr;
 
 // ---------------------- methods ------------------------------------------------------
 public:
@@ -29,7 +24,7 @@ public:
 	// sets the internal color atribute to newColor, and calculates the sprite sheet row and column to be used when rendering 
 	void setColor (BlockColor newColor);
 	// renders the block
-	void render () const;
+	void render ();
 
 	// get functions for the position (both X and Y)
 	int getX () const { return position.getX (); }

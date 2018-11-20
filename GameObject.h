@@ -4,7 +4,9 @@
 class GameObject {
 public:
 // ---------------------- methods ------------------------------------------------------
-	virtual void Render() = 0;
-	virtual void Update() = 0;
-	virtual void HandleEvents() = 0;
+	virtual ~GameObject () {};
+
+	virtual void render() = 0;
+	virtual void update() = 0;
+	virtual void handleEvents() = 0;
 };

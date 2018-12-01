@@ -101,5 +101,17 @@
     <ClInclude Include="MovingObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ArkanoidError.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SDLError.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileNotFoundError.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileFormatError.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

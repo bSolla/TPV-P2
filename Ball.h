@@ -32,5 +32,6 @@ public:
 	virtual void update ();
 
 	virtual void handleEvents (SDL_Event &e) {};
+	void setSize() { height = cellSize; width = cellSize; };
 };
 

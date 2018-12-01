@@ -34,6 +34,8 @@ public:
 	// initializes the block position according to the matrix row and column index (the [c][r]) 
 	void setPosition (uint matrixColumnIndex, uint matrixRowIndex);
 
+	int getColor() { return color + 1; }
+
 	virtual void loadFromFile () {}
 	virtual void saveToFile () {}
 	virtual void update () {}

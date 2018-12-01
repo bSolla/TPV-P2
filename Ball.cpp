@@ -61,7 +61,7 @@ bool Ball::checkBallOut () {
 
 
 void Ball::update () {
-	position = position + speed;
+	MovingObject::update();
 	checkCollisions ();
 
 	if (checkBallOut ()) {

@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <new>
 #include <string>
 #include <list>
@@ -37,6 +38,7 @@ private:
 	uint currentLevel = 1;
 	uint seconds = 0, minutes = 0;
 	uint lastTicks = 0, currentTicks = 0;
+	uint score = 0;
 
 	uint cellHeight = 20, cellWidth = 60;
 	uint mapHeight, mapWidth;
@@ -87,5 +89,7 @@ private:
 	
 	// destroys both renderer and window and quits SDL
 	void quitSDL ();
+
+	void saveToFile(string code);
 };
 

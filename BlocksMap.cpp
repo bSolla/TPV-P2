@@ -172,3 +172,19 @@ void BlocksMap::update () {
 		game->setLevelClear ();
 	}
 }
+
+// Saves the actual state of the map with the same format of the level.ark files
+
+void BlocksMap::saveToFile(ofstream file) {
+	file << rows << " " << cols << "\n";
+
+	for (int r = 0; r < rows; ++r) {
+		for (int c = 0; c < cols; ++c) {
+			if (cells[r][c] != nullptr)
+				file << cells[r][c] << " ";
+			else
+				file << 0 << " ";
+		}
+		file << "\n";
+	}
+}

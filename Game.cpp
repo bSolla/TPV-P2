@@ -73,6 +73,7 @@ void Game::scaleObjects (uint newMapWidth, uint newMapHeight) {
 	walls[WallType::leftW]->setScale (mapHeight - cellHeight, cellHeight, WallType::leftW); // -cellHeight to account for the info bar
 	walls[WallType::rightW]->setScale (mapHeight - cellHeight, cellHeight, WallType::rightW);
 	walls[WallType::topW]->setScale (cellHeight, mapWidth, WallType::topW);
+	ball->setSize();
 
 	SDL_SetWindowSize (window, mapWidth, mapHeight);
 }
@@ -218,4 +219,18 @@ void Game::quitSDL () {
 	SDL_DestroyRenderer (renderer);
 	SDL_DestroyWindow (window);
 	SDL_Quit ();
+}
+
+// Creates a new file with a given code and saves the current state of the game
+// +include a case in which the file already exists
+
+void Game::saveToFile(string code) {
+	ofstream file (code + SAVE_EXTENSION);
+
+	file << currentLevel << " " << seconds << " " << minutes << " " << lastTicks << " " << currentTicks << "\n";
+		
+	// llama al saveToFile de los objetos de la lista y añade un salto de linea
+
+	file.close();
+
 }

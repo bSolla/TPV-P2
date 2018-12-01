@@ -2,12 +2,13 @@
 #include <fstream>
 #include "Block.h"
 #include "checkML.h"
+#include "ArkanoidObject.h"
 
 const string LEVELS_PATH = "levels\\";
 
 class Game;
 
-class BlocksMap {
+class BlocksMap : public ArkanoidObject{
 // --------------------- variables------------------------------------------------------
 private:
 	uint rows, cols;
@@ -32,8 +33,13 @@ public:
 	Block* blockAt (const Vector2D& p);
 	// renders the whole Block matrix
 	void render () const;
+	
 	// checks if the level is clear, and if so calls game->setLevelClear
-	void update ();
+	virtual void update ();
+	virtual void saveToFile(ofstream file);
+	virtual void loadFromFile(ifstream file) {};
+	virtual void handleEvents(SDL_Event &e) {}
+
 
 private:
 	// given a point, calculates the row and column it occupies in the matrix

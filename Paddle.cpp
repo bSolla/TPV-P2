@@ -79,7 +79,7 @@ void Paddle::update () {
 	mapWidth = game->getMapWidth ();
 
 	if (position.getX () > 20 && speed.getX() < 0) {
-		MovingObject::update;
+		MovingObject::update();
 	}
 	if (position.getX () < (mapWidth - width - 20) && speed.getX () > 0)
 		MovingObject::update ();

@@ -124,6 +124,7 @@
     <ClCompile Include="MovingObject.cpp" />
     <ClCompile Include="Paddle.cpp" />
     <ClCompile Include="PlayerDataManager.cpp" />
+    <ClCompile Include="Reward.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Vector2D.cpp" />
     <ClCompile Include="Wall.cpp" />
@@ -143,6 +144,7 @@
     <ClInclude Include="MovingObject.h" />
     <ClInclude Include="Paddle.h" />
     <ClInclude Include="PlayerDataManager.h" />
+    <ClInclude Include="Reward.h" />
     <ClInclude Include="SDLError.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Utilities.h" />

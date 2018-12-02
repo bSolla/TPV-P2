@@ -14,8 +14,9 @@
 #include "InfoBar.h"
 #include "PlayerDataManager.h"
 #include "ArkanoidObject.h"
+#include "Reward.h"
 
-
+typedef list<ArkanoidObject*>::iterator itArkObjList;
 class Game {
 // --------------------- variables------------------------------------------------------
 private: 
@@ -23,6 +24,9 @@ private:
 	SDL_Renderer* renderer = nullptr;
 
 	list<ArkanoidObject*> gameObjects;
+	itArkObjList firstReward;
+	int numRewards = 0;
+
 	Wall* walls[NUM_WALLS];
 	Texture* textures[NUM_TEXTURES]; 
 	BlocksMap* map = nullptr;
@@ -35,6 +39,7 @@ private:
 	bool gameOver = false;
 	bool levelClear = false;
 
+	uint lives = 3;
 	uint currentLevel = 1;
 	uint seconds = 0, minutes = 0;
 	uint lastTicks = 0, currentTicks = 0;
@@ -57,6 +62,7 @@ public:
 	// setter functions
 	void setLevelClear () { levelClear = true; }
 	void setGameOver () { gameOver = true; }
+	void increaseLives () { lives++; }
 
 	// takes in the map dimensions calculated in BlocksMap::load() and scales the walls and window to fit accordingly
 	void scaleObjects (uint newMapWidth, uint newMapHeight);

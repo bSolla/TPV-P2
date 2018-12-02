@@ -2,6 +2,7 @@
 #include <string>
 #include "Texture.h"
 #include "Vector2D.h"
+#include "Utilities.h"
 
 enum TextureTypes {numbers, level};
 const string TEXTURE_NAME_NUMBERS = "images\\numbers.png";

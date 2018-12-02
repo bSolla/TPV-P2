@@ -20,42 +20,13 @@ BlocksMap::~BlocksMap () {
 
 void BlocksMap::load (const string & filename) {
 	ifstream file;
-	int color = 0;
 
 	file.open (LEVELS_PATH + filename);
 	if (!file.is_open ()) {
 		throw ("couldn't open " + filename);
 	}
 	else {
-		file >> rows >> cols;
-									
-		mapWidth = cellWidth * cols + cellHeight * 2; // to account for the walls we add cellHeight * 2 (the thickness of the walls is the same as the height of the rest of sprites)
-		mapHeight = 2 * (cellHeight * rows) + cellHeight * 2;
-
-		game->scaleObjects (mapWidth, mapHeight);
-
-		// pointer initialization
-		cells = new Block**[rows];
-
-		for (uint r = 0; r < rows; ++r) {
-			cells[r] = new Block*[cols];
-		}
-
-		// fill values in
-		for (uint r = 0; r < rows; ++r) {
-			for (uint c = 0; c < cols; ++c) {
-				file >> color;
-
-				if (color == 0) { 
-					cells[r][c] = nullptr;
-				}
-				else {
-					cells[r][c] = new Block (game, BlockColor(color));
-					cells[r][c]->setPosition (c, r);
-					++nBlocks;
-				}
-			}
-		}
+		BlocksMap::loadFromFile (file);
 
 		file.close ();
 	}
@@ -173,18 +144,53 @@ void BlocksMap::update () {
 	}
 }
 
-// Saves the actual state of the map with the same format of the level.ark files
 
-void BlocksMap::saveToFile(ofstream file) {
+// Saves the actual state of the map with the same format of the level.ark files
+void BlocksMap::saveToFile(ofstream &file) {
 	file << rows << " " << cols << "\n";
 
 	for (int r = 0; r < rows; ++r) {
 		for (int c = 0; c < cols; ++c) {
 			if (cells[r][c] != nullptr)
-				file << cells[r][c] << " ";
+				cells[r][c]->saveToFile (file);
 			else
 				file << 0 << " ";
 		}
 		file << "\n";
+	}
+}
+
+
+void BlocksMap::loadFromFile (ifstream &file) {
+	int color = 0;
+
+	file >> rows >> cols;
+
+	mapWidth = cellWidth * cols + cellHeight * 2; // to account for the walls we add cellHeight * 2 (the thickness of the walls is the same as the height of the rest of sprites)
+	mapHeight = 2 * (cellHeight * rows) + cellHeight * 2;
+
+	game->scaleObjects (mapWidth, mapHeight);
+
+	// pointer initialization
+	cells = new Block**[rows];
+
+	for (uint r = 0; r < rows; ++r) {
+		cells[r] = new Block*[cols];
+	}
+
+	// fill values in
+	for (uint r = 0; r < rows; ++r) {
+		for (uint c = 0; c < cols; ++c) {
+			file >> color;
+
+			if (color == 0) { 
+				cells[r][c] = nullptr;
+			}
+			else {
+				cells[r][c] = new Block (game, BlockColor(color));
+				cells[r][c]->setPosition (c, r);
+				++nBlocks;
+			}
+		}
 	}
 }

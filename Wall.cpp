@@ -73,11 +73,29 @@ bool Wall::collides (SDL_Rect ballRect, Vector2D &collVector) {
 }
 
 
-void Wall::loadFromFile () {
+void Wall::loadFromFile (ifstream &file) {
+	double colVectX, colVectY;
 
+	// load position
+	ArkanoidObject::loadFromFile (file);
+
+	//load width and height (because they change with the number of blocks the map has, it's not constant like with other objects)
+	file >> width >> height;
+
+	// load collision vector
+	file >> colVectX >> colVectY;
+	collisionVector.setX (colVectX);
+	collisionVector.setY (colVectY);
 }
 
 
-void Wall::saveToFile () {
+void Wall::saveToFile (ofstream &file) {
+	// save position
+	ArkanoidObject::saveToFile (file);
 
+	// save width and height (because they change with the number of blocks the map has, it's not constant like with other objects)
+	file << width << " " << height << " ";
+
+	// save collision vector
+	file << collisionVector.getX () << " " << collisionVector.getY ();
 }

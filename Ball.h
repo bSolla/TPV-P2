@@ -12,7 +12,7 @@ class Game;
 class Ball : public MovingObject{
 // --------------------- variables------------------------------------------------------
 private:
-	int cellSize = 20;
+	int cellSize = STANDARD_CELL_HEIGHT;
 
 
 // ---------------------- methods ------------------------------------------------------
@@ -32,6 +32,8 @@ public:
 	virtual void update ();
 
 	virtual void handleEvents (SDL_Event &e) {};
-	void setSize() { height = cellSize; width = cellSize; };
+
+	virtual void loadFromFile (ifstream &file);
+	virtual void saveToFile (ofstream &file);
 };
 

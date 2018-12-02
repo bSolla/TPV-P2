@@ -4,6 +4,8 @@
 #include "Texture.h"
 #include "ArkanoidObject.h"
 
+using namespace std;
+
 class Game; 
 
 enum WallType { topW, rightW, leftW};
@@ -29,8 +31,8 @@ public:
 	// checks if the ball collides with the wall and if so, returns the collision vector 
 	bool collides (SDL_Rect ballRect, Vector2D &collVector);
 
-	virtual void loadFromFile ();
-	virtual void saveToFile ();
+	virtual void loadFromFile (ifstream &file);
+	virtual void saveToFile (ofstream &file);
 	virtual void update () {}
 	virtual void handleEvents(SDL_Event &e) {}
 };

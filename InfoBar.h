@@ -15,7 +15,7 @@ class InfoBar {
 // --------------------- variables------------------------------------------------------
 private:
 	Vector2D position;
-	uint cellHeight = 20;
+	uint cellHeight = STANDARD_CELL_HEIGHT;
 	uint mapWidth;
 	Texture* textures[2];
 

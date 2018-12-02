@@ -5,6 +5,11 @@
 Ball::Ball (Game* gamePtr) {
 	game = gamePtr;
 	texture = game->getTexture (TextureNames::ball_);
+
+	height = cellSize; 
+	width = cellSize;
+	speed.setX (MAX_SPEED_MODULE * -0.5);
+	speed.setY (MAX_SPEED_MODULE * -0.5);
 }
 
 
@@ -67,4 +72,14 @@ void Ball::update () {
 	if (checkBallOut ()) {
 		game->setGameOver ();
 	}
+}
+
+
+void Ball::loadFromFile (ifstream &file) {
+	MovingObject::loadFromFile (file);
+}
+
+
+void Ball::saveToFile (ofstream &file) {
+	MovingObject::saveToFile (file);
 }

@@ -31,5 +31,8 @@ public:
 	bool collides (SDL_Rect ballRect, Vector2D &collVector);
 	// updates the paddle position
 	virtual void update ();
+
+	virtual void saveToFile(ofstream &file);
+	virtual void loadFromFile(ifstream &file);
 };
 

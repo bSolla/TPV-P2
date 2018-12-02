@@ -73,7 +73,6 @@ void Game::scaleObjects (uint newMapWidth, uint newMapHeight) {
 	walls[WallType::leftW]->setScale (mapHeight - cellHeight, cellHeight, WallType::leftW); // -cellHeight to account for the info bar
 	walls[WallType::rightW]->setScale (mapHeight - cellHeight, cellHeight, WallType::rightW);
 	walls[WallType::topW]->setScale (cellHeight, mapWidth, WallType::topW);
-	ball->setSize();
 
 	SDL_SetWindowSize (window, mapWidth, mapHeight);
 }

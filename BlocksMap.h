@@ -1,5 +1,4 @@
 #pragma once
-#include <fstream>
 #include "Block.h"
 #include "checkML.h"
 #include "ArkanoidObject.h"
@@ -36,8 +35,8 @@ public:
 	
 	// checks if the level is clear, and if so calls game->setLevelClear
 	virtual void update ();
-	virtual void saveToFile(ofstream file);
-	virtual void loadFromFile(ifstream file) {};
+	virtual void saveToFile(ofstream &file);
+	virtual void loadFromFile(ifstream &file);
 	virtual void handleEvents(SDL_Event &e) {}
 
 

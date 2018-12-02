@@ -22,8 +22,16 @@ SDL_Rect ArkanoidObject::getRect () {
 	return rect;
 }
 
-void ArkanoidObject::saveToFile(ofstream file) {
-	file << position.getX() << " " << position.getY() << " " << width << " " << height;
+
+// TODO: CHECK FOR TYPE ERRORS AND STUFF, USING FILEFORMAT ERROR 
+void ArkanoidObject::saveToFile(ofstream &file) {
+	file << "\n" << position.getX() << " " << position.getY() << " ";
 }
 
-void ArkanoidObject::loadFromFile(ifstream file) {}
+void ArkanoidObject::loadFromFile(ifstream &file) {
+	double x, y;
+	
+	file >> x >> y;
+	position.setX (x);
+	position.setY (y);
+}

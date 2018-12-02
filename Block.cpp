@@ -33,3 +33,11 @@ void Block::setPosition (uint matrixColumnIndex, uint matrixRowIndex) {
 void Block::render () {
 	texture->renderFrame (getRect(), row, col);
 }
+
+
+void Block::saveToFile (ofstream &file) {
+	file << int (color) << " ";
+}
+
+
+

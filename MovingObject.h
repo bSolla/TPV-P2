@@ -11,8 +11,8 @@ public:
 	virtual ~MovingObject ();
 
 	virtual void update();
-	virtual void loadFromFile() {} // add speed too
-	virtual void saveToFile(ofstream file); // add speed too
+	virtual void loadFromFile (ifstream &file); // add speed too
+	virtual void saveToFile(ofstream &file); // add speed too
 
 };
 

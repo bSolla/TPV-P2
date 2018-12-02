@@ -79,9 +79,19 @@ void Paddle::update () {
 	mapWidth = game->getMapWidth ();
 
 	if (position.getX () > 20 && speed.getX() < 0) {
-		position = position + speed;
+		MovingObject::update;
 	}
-	if (position.getX () < (mapWidth - width - 20) && speed.getX() > 0)
-		position = position + speed;
+	if (position.getX () < (mapWidth - width - 20) && speed.getX () > 0)
+		MovingObject::update ();
 	
+}
+
+
+void Paddle::saveToFile (ofstream &file) {
+	MovingObject::saveToFile (file);
+}
+
+
+void Paddle::loadFromFile (ifstream &file) {
+	MovingObject::loadFromFile (file);
 }

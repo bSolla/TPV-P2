@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include "GameObject.h"
 #include "Vector2D.h"
 #include "Texture.h"
@@ -21,9 +22,9 @@ public:
 
 	virtual ~ArkanoidObject () {};
 
-	virtual void loadFromFile(ifstream file);
+	virtual void loadFromFile(ifstream &file);
 
-	virtual void saveToFile(ofstream file);
+	virtual void saveToFile(ofstream &file);
 
 	virtual SDL_Rect getRect();
 

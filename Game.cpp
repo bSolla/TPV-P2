@@ -168,14 +168,13 @@ bool Game::collides (SDL_Rect ballRect, Vector2D ballSpeed, Vector2D &collVector
 		}
 	}
 	
-		// if collides with any of the walls...
+	// if collides with any of the walls...
 	else if (walls[WallType::leftW]->collides (ballRect, collVector) ||
 		walls[WallType::rightW]->collides(ballRect, collVector) ||
 		walls[WallType::topW]->collides(ballRect, collVector)) {
 		
 		ballCollides = true;
 	 }
-
 
 	// if collides with the paddle...
 	else if (paddle->collides (ballRect, collVector)) {

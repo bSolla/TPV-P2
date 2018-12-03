@@ -31,7 +31,7 @@ public:
 	// updates the ball position
 	virtual void update ();
 
-	virtual void handleEvents (SDL_Event &e) {};
+	virtual void handleEvents (SDL_Event &e) {}
 
 	virtual void loadFromFile (ifstream &file);
 	virtual void saveToFile (ofstream &file);

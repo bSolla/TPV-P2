@@ -46,13 +46,13 @@ void Paddle::handleEvents (SDL_Event &e) {
 }
 
 
-bool Paddle::collides (SDL_Rect ballRect, Vector2D &collVector) {
-	bool ballCollides = false;
+bool Paddle::collides (SDL_Rect objectRect, Vector2D &collVector) {
+	bool objectCollides = false;
 	bool boundariesOK;
-	int xCenterBall = ballRect.x + (ballRect.w / 2);
-	int yBottomBall = ballRect.y + ballRect.h;
+	int xCenterBall = objectRect.x + (objectRect.w / 2);
+	int yBottomBall = objectRect.y + objectRect.h;
 
-	// checks that the ball's collision points are within the paddle's boundaries
+	// checks that the object's collision points are within the paddle's boundaries
 	boundariesOK = yBottomBall > position.getY () && yBottomBall < (position.getY () + height);
 	boundariesOK &= xCenterBall > position.getX () && xCenterBall < (position.getX () + width);
 
@@ -60,18 +60,14 @@ bool Paddle::collides (SDL_Rect ballRect, Vector2D &collVector) {
 		int mid = position.getX () + (width / 2);
 		double n = cos (MAX_ANGLE * RADIAN_CONVERSION_FACTOR);  
 
-		// for debugging, delete after it's done
-		//double d = (n * double (xCenterBall - mid));
-		//double f = (position.getX () - double (mid) );
-
 		collVector.setX ((n * double(xCenterBall - mid)) / (position.getX () - double(mid)));
 		collVector.setY (sqrt (1.0 - pow (collVector.getX (), 2)));
 
-		ballCollides = true;
+		objectCollides = true;
 	}
-	// if not, ballCollides is initialized to false so no need to do anything
+	// if not, objectCollides is initialized to false so no need to do anything
 	
-	return ballCollides;
+	return objectCollides;
 }
 
 

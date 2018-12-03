@@ -15,6 +15,7 @@
 #include "PlayerDataManager.h"
 #include "ArkanoidObject.h"
 #include "Reward.h"
+#include "FileNotFoundError.h"
 
 typedef list<ArkanoidObject*>::iterator itArkObjList;
 class Game {
@@ -70,7 +71,10 @@ public:
 	void run ();
 	// returns wether the ball collides with an object or not, and if it does, returns the collision vector
 	bool collides (SDL_Rect ballRect, Vector2D ballSpeed, Vector2D &collVector);
-	
+	// checks if a reward collides with the paddle
+	bool rewardCollides (SDL_Rect rewardRect);
+	// deletes an object from the list
+	void killObject (itArkObjList it);
 
 private:
 	// initializes SDL 
@@ -88,6 +92,8 @@ private:
 	void handleLevelUp ();
 	// keeps track of the time elapsed since starting a level
 	void handleTime ();
+	// creates a new reward positioned where the ball hit a block (using the ball SDL_Rect)
+	void createReward (SDL_Rect rect);
 	// calls the respective render methods from ball, paddle and map and then draws 
 	void render () const;
 	// calls the update methods from ball and paddle

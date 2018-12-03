@@ -4,11 +4,11 @@
 #include "MovingObject.h"
 
 // ----------- Function object hierarchy to manage the effects of each reward ------------------------
-// Base abstract class Action
+// Base class Action
 class Action {
 public:
 	Action () {}
-	virtual void operator()(Game *gamePtr) = 0; // this is a placeholder for the specific action each reward has
+	virtual void operator()(Game *gamePtr) {} // this is a placeholder for the specific action each reward has
 };
 
 // Change to the next level
@@ -27,6 +27,7 @@ public:
 
 
 // TODO: FINISH THESE TWO ACTIONS
+
 // Make the paddle longer
 class EnlargePaddle : public Action {
 public:
@@ -43,15 +44,35 @@ public:
 };
 
 
-
+enum RewardType {L, R, E, S};
 
 // ----------------------------------  R E W A R D S  -----------------------------------------------
 class Reward : public MovingObject {
+// --------------------- variables------------------------------------------------------
 private:
+	Action *action;
+	Game *game;
+
+	list<ArkanoidObject*>::iterator itList;
+
+// ---------------------- methods ------------------------------------------------------
+private:
+	void setActionType (RewardType rewardType);
 
 public:
-	Reward ();
+	Reward (Game *gamePtr, RewardType rewardType);
 	~Reward ();
+
+	// used to set the iterator to the position of the list the reward is in 
+	void setItList (list<ArkanoidObject*>::iterator it) { itList = it; }
+	void setPosition (const SDL_Rect &rect) { position.setX (rect.x); position.setY (rect.y); }
+
+	virtual void update ();
+
+	virtual void handleEvents (SDL_Event &e);
+
+	virtual void loadFromFile (ifstream &file);
+	virtual void saveToFile (ofstream &file);
 };
 
 #endif 

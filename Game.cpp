@@ -158,8 +158,14 @@ bool Game::collides (SDL_Rect ballRect, Vector2D ballSpeed, Vector2D &collVector
 	// if collides with the blocks...
 	blockPtr = map->collides (ballRect, ballSpeed, collVector);
 	if (blockPtr != nullptr) {
+		int rewardRand = rand () % 6; // random number [0, 5] to check if a reward is created
+		
 		ballCollides = true;
 		map->setBlockNull (blockPtr);
+
+		if (rewardRand < 1) {
+			createReward (ballRect);
+		}
 	}
 	
 		// if collides with any of the walls...
@@ -180,13 +186,49 @@ bool Game::collides (SDL_Rect ballRect, Vector2D ballSpeed, Vector2D &collVector
 }
 
 
+bool Game::rewardCollides (SDL_Rect rewardRect) {
+	Vector2D dummyVector2D;
+
+	return paddle->collides (rewardRect, dummyVector2D);
+}
+
+
+void Game::createReward (SDL_Rect rect) {
+	int rewardType = rand () % 4;
+	Reward *r = new Reward (this, RewardType (rewardType));
+	r->setPosition (rect);
+
+	gameObjects.push_back (r);
+	itArkObjList itLastReward = --(gameObjects.end ());
+	if (firstReward == gameObjects.end ()) {
+		firstReward = itLastReward;
+	}
+
+	r->setItList (itLastReward);
+}
+
+
+void Game::killObject (itArkObjList it) {
+	if (it == firstReward) {
+		firstReward++;
+	}
+
+	delete *it;
+	gameObjects.erase (it);
+}
+
+
 void Game::render () const {
 	SDL_RenderClear (renderer);
 
 	renderBackground ();
-	map->render ();
-	paddle->render ();
-	ball->render ();
+	//map->render ();
+	//paddle->render ();
+	//ball->render ();
+	for (auto it = gameObjects.begin (); it != gameObjects.end (); ++it) {
+		(*it)->render ();
+	}
+
 	infoBar->render (seconds, minutes, currentLevel);
 
 	SDL_RenderPresent (renderer);
@@ -194,9 +236,16 @@ void Game::render () const {
 
 
 void Game::update () {
-	ball->update();
-	paddle->update();
-	map->update ();
+	//ball->update();
+	//paddle->update();
+	//map->update ();
+
+	for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ) {
+		itArkObjList next = it;
+		++next;
+		(*it)->update ();
+		it = next;
+	}
 
 	handleEvents ();
 	handleLevelUp ();
@@ -222,14 +271,22 @@ void Game::quitSDL () {
 
 // Creates a new file with a given code and saves the current state of the game
 // +include a case in which the file already exists
-
 void Game::saveToFile(string code) {
-	ofstream file (code + SAVE_EXTENSION);
+	ofstream file;
 
-	file << currentLevel << " " << seconds << " " << minutes << " " << lastTicks << " " << currentTicks << "\n";
-		
-	// llama al saveToFile de los objetos de la lista y añade un salto de linea
+	file.open (code + SAVE_EXTENSION);
+	if (file.is_open) {
 
-	file.close();
+		file << currentLevel << " " << seconds << " " << minutes << " " << lastTicks << " " << currentTicks << "\n";
+
+		for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ++it) {
+			(*it)->saveToFile (file);
+			file << "\n";
+		}
+
+		file.close ();
+	}
+	else
+		throw FileNotFoundError (code + SAVE_EXTENSION);
 
 }

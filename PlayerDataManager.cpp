@@ -17,7 +17,7 @@ void PlayerDataManager::loadTop10 () {
 
 	file.open (TOP_10_FILENAME);
 	if (!file.is_open ()) {
-		throw ("couldn't open " + TOP_10_FILENAME);
+		throw (FileNotFoundError (TOP_10_FILENAME));
 	}
 	else {
 		for (unsigned int i = 0; i < 10; ++i) {
@@ -57,7 +57,7 @@ void PlayerDataManager::writeTop10 () {
 
 	file.open (TOP_10_FILENAME);
 	if (!file.is_open ()) {
-		throw ("couldn't open " + TOP_10_FILENAME);
+		throw (FileNotFoundError(TOP_10_FILENAME));
 	}
 	else {
 		for (unsigned int i = 0; i < top10.size (); ++i) {

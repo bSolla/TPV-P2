@@ -4,6 +4,8 @@
 
 #include "SDL.h" // Windows
 #include "SDL_image.h" // Windows
+#include "SDLError.h"
+#include "FileNotFoundError.h"
 
 #include "checkML.h"
 #include <string>

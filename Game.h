@@ -16,11 +16,13 @@
 #include "ArkanoidObject.h"
 #include "Reward.h"
 #include "FileNotFoundError.h"
+#include "FileFormatError.h"
+#include "SDLError.h"
 
 typedef list<ArkanoidObject*>::iterator itArkObjList;
 class Game {
-// --------------------- variables------------------------------------------------------
-private: 
+	// --------------------- variables------------------------------------------------------
+private:
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 
@@ -29,7 +31,7 @@ private:
 	int numRewards = 0;
 
 	Wall* walls[NUM_WALLS];
-	Texture* textures[NUM_TEXTURES]; 
+	Texture* textures[NUM_TEXTURES];
 	BlocksMap* map = nullptr;
 	Ball* ball = nullptr;
 	Paddle* paddle = nullptr;
@@ -49,59 +51,61 @@ private:
 	uint cellHeight = 20, cellWidth = 60;
 	uint mapHeight, mapWidth;
 
-// ---------------------- methods ------------------------------------------------------
+	// ---------------------- methods ------------------------------------------------------
 public:
-	Game ();
-	~Game ();
+	Game();
+	~Game();
 
 	// getter functions
-	uint getMapWidth () const { return mapWidth; }
-	uint getMapHeight () const { return mapHeight; }
-	Texture* getTexture (TextureNames textureName) const { return textures[textureName]; }
-	SDL_Renderer* getRenderer () const { return renderer; }
+	uint getMapWidth() const { return mapWidth; }
+	uint getMapHeight() const { return mapHeight; }
+	Texture* getTexture(TextureNames textureName) const { return textures[textureName]; }
+	SDL_Renderer* getRenderer() const { return renderer; }
 
 	// setter functions
-	void setLevelClear () { levelClear = true; }
-	void setGameOver () { gameOver = true; }
-	void increaseLives () { lives++; }
+	void setLevelClear() { levelClear = true; }
+	void setGameOver() { gameOver = true; }
+	void increaseLives() { lives++; }
 
 	// takes in the map dimensions calculated in BlocksMap::load() and scales the walls and window to fit accordingly
-	void scaleObjects (uint newMapWidth, uint newMapHeight);
+	void scaleObjects(uint newMapWidth, uint newMapHeight);
 	// main game loop, runs until a quit event is detected
-	void run ();
+	void run();
 	// returns wether the ball collides with an object or not, and if it does, returns the collision vector
-	bool collides (SDL_Rect ballRect, Vector2D ballSpeed, Vector2D &collVector);
+	bool collides(SDL_Rect ballRect, Vector2D ballSpeed, Vector2D &collVector);
 	// checks if a reward collides with the paddle
-	bool rewardCollides (SDL_Rect rewardRect);
+	bool rewardCollides(SDL_Rect rewardRect);
 	// deletes an object from the list
-	void killObject (itArkObjList it);
+	void killObject(itArkObjList it);
 
 private:
 	// initializes SDL 
-	void iniSDL ();
+	void iniSDL();
 	// initializes all textures
-	void iniTextures ();
+	void iniTextures();
 	// gives the ball and paddle their initial positions, calculated from the map dimensions
-	void positionObjects ();
+	void positionObjects();
 
 	// renders the walls
-	void renderBackground () const;
+	void renderBackground() const;
 	// polls events, and checks for quit events. also calls Paddle::handleEvents(SDL_Event &e), which handles keyboard events
-	void handleEvents ();
+	void handleEvents();
 	// if the control bool levelClear is true, deletes the old BlocksMap, creates a new one and reads all the corresponding info
-	void handleLevelUp ();
+	void handleLevelUp();
 	// keeps track of the time elapsed since starting a level
-	void handleTime ();
+	void handleTime();
 	// creates a new reward positioned where the ball hit a block (using the ball SDL_Rect)
-	void createReward (SDL_Rect rect);
+	void createReward(SDL_Rect rect);
 	// calls the respective render methods from ball, paddle and map and then draws 
-	void render () const;
+	void render() const;
 	// calls the update methods from ball and paddle
-	void update ();
-	
+	void update();
+
 	// destroys both renderer and window and quits SDL
-	void quitSDL ();
+	void quitSDL();
 
 	void saveToFile(string code);
+
+	void loadFromFile(string code);
 };
 

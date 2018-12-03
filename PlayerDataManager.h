@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <fstream>
+#include "FileNotFoundError.h"
 
 using namespace std;
 

@@ -48,21 +48,32 @@ void Game::iniSDL () {
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); 
 	
 	if (window == nullptr || renderer == nullptr) {
-		throw "Error initializing SDL\n";
+		throw SDLError(SDL_GetError());
 	}
 }
 
 
 void Game::iniTextures () {
-	string errorMsg;
 
-	for (uint i = 0; i < NUM_TEXTURES; ++i) {
-		textures[i] = new Texture (renderer, IMAGES_PATH + TEXTURE_ATTRIBUTES[i].filename, TEXTURE_ATTRIBUTES[i].rows, TEXTURE_ATTRIBUTES[i].cols);
+	try {
+		for (uint i = 0; i < NUM_TEXTURES; ++i) {
+			textures[i] = new Texture(renderer, IMAGES_PATH + TEXTURE_ATTRIBUTES[i].filename, TEXTURE_ATTRIBUTES[i].rows, TEXTURE_ATTRIBUTES[i].cols);
+		}
 	}
 
-	errorMsg = SDL_GetError ();
+	catch (SDLError error) {
+		throw SDLError(SDL_GetError());
+	}
+
+	/*string errorMsg;
+
+	for (uint i = 0; i < NUM_TEXTURES; ++i) {
+		textures[i] = new Texture(renderer, IMAGES_PATH + TEXTURE_ATTRIBUTES[i].filename, TEXTURE_ATTRIBUTES[i].rows, TEXTURE_ATTRIBUTES[i].cols);
+	}
+
+	errorMsg = SDL_GetError();
 	if (errorMsg != "")
-		throw errorMsg;
+		throw errorMsg;*/
 }
 
 
@@ -287,5 +298,22 @@ void Game::saveToFile(string code) {
 	}
 	else
 		throw FileNotFoundError (code + SAVE_EXTENSION);
+}
+
+void Game::loadFromFile(string code) {
+	ifstream file;
+
+	file.open(code + SAVE_EXTENSION);
+	if (file.is_open) {
+		file >> currentLevel >> seconds >> minutes >> lastTicks >> currentTicks;
+
+		for (itArkObjList it = gameObjects.begin(); it != gameObjects.end(); ++it) {
+			(*it)->loadFromFile(file);
+		}
+
+		file.close();
+	}
+	else
+		throw FileNotFoundError(code + SAVE_EXTENSION);
 
 }

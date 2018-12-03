@@ -23,7 +23,7 @@ void BlocksMap::load (const string & filename) {
 
 	file.open (LEVELS_PATH + filename);
 	if (!file.is_open ()) {
-		throw ("couldn't open " + filename);
+		throw (FileNotFoundError (filename));
 	}
 	else {
 		BlocksMap::loadFromFile (file);

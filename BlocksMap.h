@@ -2,6 +2,7 @@
 #include "Block.h"
 #include "checkML.h"
 #include "ArkanoidObject.h"
+#include "FileNotFoundError.h"
 
 const string LEVELS_PATH = "levels\\";
 

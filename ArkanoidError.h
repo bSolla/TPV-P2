@@ -1,3 +1,6 @@
+#ifndef ARKANOIDERROR_H
+#define ARKANOIDERROR_H
+
 using namespace std;
 
 #include <string>
@@ -19,3 +22,4 @@ public:
 	}
 };
 
+#endif // !ARKANOIDERROR_H

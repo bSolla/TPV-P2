@@ -57,7 +57,7 @@ void Reward::update () {
 	MovingObject::update ();
 
 	if (position.getY () > paddleY) {
-		if (game->rewardCollides (SDL_Rect { position.getX (), position.getY (), STANDARD_CELL_HEIGHT, STANDARD_CELL_WIDTH })) {
+		if (game->rewardCollides (SDL_Rect { int(position.getX ()), int(position.getY ()), STANDARD_CELL_HEIGHT, STANDARD_CELL_WIDTH })) {
 			rewardAction (game, action);
 			game->killObject (itList);
 		}
@@ -65,4 +65,12 @@ void Reward::update () {
 			game->killObject (itList);
 		}
 	}
+}
+
+
+void Reward::loadFromFile (ifstream & file) {
+}
+
+
+void Reward::saveToFile (ofstream & file) {
 }

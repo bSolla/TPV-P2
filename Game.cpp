@@ -1,20 +1,41 @@
 #include "Game.h"
 
+// TODO: CLEAN UP THE COMMENTS
+
 
 Game::Game () {
 	iniSDL ();
 	iniTextures ();
 	
-	walls[WallType::leftW] = new Wall (this, textures[TextureNames::sideWall]);
-	walls[WallType::rightW] = new Wall (this, textures[TextureNames::sideWall]);
-	walls[WallType::topW] = new Wall (this, textures[TextureNames::topWall]);
-			
-	ball = new Ball(this);
-	paddle = new Paddle(this);
-	map = new BlocksMap(this);
-	// playerInfoManager = new PlayerDataManager ();
+	gameObjects.push_back (new BlocksMap (this));
 
-	map->load(LEVEL_SHARED_NAME + to_string(currentLevel) + LEVEL_EXTENSION);
+	gameObjects.push_back (new Wall (this, textures[TextureNames::sideWall])); //leftW
+	gameObjects.push_back (new Wall (this, textures[TextureNames::sideWall])); //rightW
+	gameObjects.push_back (new Wall (this, textures[TextureNames::topWall])); //topW
+
+	gameObjects.push_back (new Ball (this));
+	ballIt = gameObjects.end(); // ballIt set past the end
+	ballIt--; // ballIt actually pointing to the position in the list
+
+	gameObjects.push_back (new Paddle (this));
+	paddleIt = gameObjects.end (); // paddleIt set past the end
+	paddleIt--; //paddleIt actually pointing to the position in the list
+
+	//walls[WallType::leftW] = new Wall (this, textures[TextureNames::sideWall]);
+	//walls[WallType::rightW] = new Wall (this, textures[TextureNames::sideWall]);
+	//walls[WallType::topW] = new Wall (this, textures[TextureNames::topWall]);
+	//		
+	//ball = new Ball(this);
+	//paddle = new Paddle(this);
+	//map = new BlocksMap(this);
+
+	// playerInfoManager = new PlayerDataManager ();
+	if (dynamic_cast<BlocksMap*>(*gameObjects.begin ()) != nullptr) {
+		dynamic_cast<BlocksMap*>(*gameObjects.begin ())->load (LEVEL_SHARED_NAME + to_string (currentLevel) + LEVEL_EXTENSION);
+	}
+	else
+		throw ArkanoidError ("Casting error\n");
+	//map->load(LEVEL_SHARED_NAME + to_string(currentLevel) + LEVEL_EXTENSION);
 
 	infoBar = new InfoBar (this);
 
@@ -23,20 +44,23 @@ Game::Game () {
 
 
 Game::~Game () {
-	delete ball;
-	delete paddle;
-	delete map;
-	delete infoBar;
+	//delete ball;
+	//delete paddle;
+	//delete map;
+	//delete infoBar;
+	//for (uint i = 0; i < NUM_WALLS; ++i) {
+	//	delete walls[i];
+	//}
+	for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ++it) {
+		delete (*it);
+	}
+
 	// delete playerInfoManager
 
 	for (uint i = 0; i < NUM_TEXTURES; ++i) {
 		delete textures[i];
 	}
 
-	for (uint i = 0; i < NUM_WALLS; ++i) {
-		delete walls[i];
-	}
-	
 	quitSDL ();
 }
 
@@ -55,17 +79,17 @@ void Game::iniSDL () {
 
 void Game::iniTextures () {
 
-	try {
-		for (uint i = 0; i < NUM_TEXTURES; ++i) {
-			textures[i] = new Texture(renderer, IMAGES_PATH + TEXTURE_ATTRIBUTES[i].filename, TEXTURE_ATTRIBUTES[i].rows, TEXTURE_ATTRIBUTES[i].cols);
-		}
-	}
+	//try {
+	//	for (uint i = 0; i < NUM_TEXTURES; ++i) {
+	//		textures[i] = new Texture(renderer, IMAGES_PATH + TEXTURE_ATTRIBUTES[i].filename, TEXTURE_ATTRIBUTES[i].rows, TEXTURE_ATTRIBUTES[i].cols);
+	//	}
+	//}
 
-	catch (SDLError error) {
-		throw SDLError(SDL_GetError());
-	}
+	//catch (SDLError error) {
+	//	throw SDLError(SDL_GetError());
+	//}
 
-	/*string errorMsg;
+	string errorMsg;
 
 	for (uint i = 0; i < NUM_TEXTURES; ++i) {
 		textures[i] = new Texture(renderer, IMAGES_PATH + TEXTURE_ATTRIBUTES[i].filename, TEXTURE_ATTRIBUTES[i].rows, TEXTURE_ATTRIBUTES[i].cols);
@@ -73,7 +97,7 @@ void Game::iniTextures () {
 
 	errorMsg = SDL_GetError();
 	if (errorMsg != "")
-		throw errorMsg;*/
+		throw SDLError(errorMsg);
 }
 
 
@@ -81,36 +105,79 @@ void Game::scaleObjects (uint newMapWidth, uint newMapHeight) {
 	mapHeight = newMapHeight;
 	mapWidth = newMapWidth;
 
-	walls[WallType::leftW]->setScale (mapHeight - cellHeight, cellHeight, WallType::leftW); // -cellHeight to account for the info bar
-	walls[WallType::rightW]->setScale (mapHeight - cellHeight, cellHeight, WallType::rightW);
-	walls[WallType::topW]->setScale (cellHeight, mapWidth, WallType::topW);
+	itArkObjList wallIt = gameObjects.begin (); // it points to map for now
+	wallIt++; // but now it points to the first wall
+
+	// we can't make it in a loop because each wall has unique scale
+
+	// left wall -------------------------------------------
+	if (dynamic_cast<Wall*>(*wallIt) != nullptr) { 
+		dynamic_cast<Wall*>(*wallIt)->setScale (mapHeight - STANDARD_CELL_HEIGHT, WALL_THICKNESS, WallType::leftW); // -STANDARD_CELL_HEIGHT to account for the info bar
+	}
+	else
+		throw ArkanoidError ("Casting error\n");
+	wallIt++;
+
+	// right wall ----------------------------------------
+	if (dynamic_cast<Wall*>(*wallIt) != nullptr) { 
+		dynamic_cast<Wall*>(*wallIt)->setScale (mapHeight - STANDARD_CELL_HEIGHT, WALL_THICKNESS, WallType::rightW);
+	}
+	else
+		throw ArkanoidError ("Casting error\n");
+	wallIt++;
+
+	// top wall ------------------------------------------
+	if (dynamic_cast<Wall*>(*wallIt) != nullptr) { 
+		dynamic_cast<Wall*>(*wallIt)->setScale (WALL_THICKNESS, mapWidth, WallType::topW);
+	}
+	else
+		throw ArkanoidError ("Casting error\n");
+	//walls[WallType::leftW]->setScale (mapHeight - STANDARD_CELL_HEIGHT, WALL_THICKNESS, WallType::leftW); // -STANDARD_CELL_HEIGHT to account for the info bar
+	//walls[WallType::rightW]->setScale (mapHeight - STANDARD_CELL_HEIGHT, WALL_THICKNESS, WallType::rightW);
+	//walls[WallType::topW]->setScale (WALL_THICKNESS, mapWidth, WallType::topW);
 
 	SDL_SetWindowSize (window, mapWidth, mapHeight);
 }
 
 
 void Game::positionObjects () {
-	paddle->setInitialPosition (mapWidth, mapHeight - cellHeight * 3);
-	ball->setInitialPosition (mapWidth, mapHeight - cellHeight * 4);
+	// position paddle -------------------------------------
+	if (dynamic_cast<Paddle*>(*paddleIt) != nullptr) { 
+		dynamic_cast<Paddle*>(*paddleIt)->setInitialPosition (mapWidth, mapHeight - STANDARD_CELL_HEIGHT * 3);
+	}
+	else
+		throw ArkanoidError ("Casting error\n");
+
+	// position ball --------------------------------------
+	if (dynamic_cast<Ball*>(*ballIt) != nullptr) { 
+		dynamic_cast<Ball*>(*ballIt)->setInitialPosition (mapWidth, mapHeight - STANDARD_CELL_HEIGHT * 4);
+	}
+	else
+		throw ArkanoidError ("Casting error\n");
+	//paddle->setInitialPosition (mapWidth, mapHeight - cellHeight * 3);
+	//ball->setInitialPosition (mapWidth, mapHeight - cellHeight * 4);
 }
 
 
 void Game::renderBackground () const{
-	for (uint i = 0; i < NUM_WALLS; ++i) {
-		walls[i]->render ();
-	}
+	//for (uint i = 0; i < NUM_WALLS; ++i) {
+	//	walls[i]->render ();
+	//}
 }
 
 
 void Game::handleEvents () {
-	SDL_Event event;  
+	SDL_Event ev;  
 
-	if (SDL_PollEvent (&event)) {
-		if (event.type == SDL_QUIT) {
+	if (SDL_PollEvent (&ev)) {
+		if (ev.type == SDL_QUIT) {
 			end = true;
 		}
 		else {
-			paddle->handleEvents (event);
+			//paddle->handleEvents (ev);
+			for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ++it) {
+				(*it)->handleEvents (ev);
+			}
 		}
 	}
 }
@@ -118,8 +185,13 @@ void Game::handleEvents () {
 
 void Game::handleLevelUp () {
 	if (levelClear) {
-		delete map;	// delete the old map and make a new one for the new level
-		map = new BlocksMap (this);
+		//delete map;	// delete the old map and make a new one for the new level
+		//map = new BlocksMap (this);
+
+		delete (*gameObjects.begin ());// delete the old map and make to new one for the new level
+		gameObjects.erase (gameObjects.begin ());
+		gameObjects.push_front (new BlocksMap (this)); // new map
+
 		delete infoBar; // delete the old info bar to make a new one
 
 		currentLevel++;
@@ -132,7 +204,9 @@ void Game::handleLevelUp () {
 		if (currentLevel > MAX_LEVEL)
 			end = true;
 		else {
-			map->load (LEVEL_SHARED_NAME + to_string (currentLevel) + LEVEL_EXTENSION);
+			// static cast because we know for sure that the first object is the map (it was created within this method)
+			static_cast<BlocksMap*>(*gameObjects.begin())->load (LEVEL_SHARED_NAME + to_string (currentLevel) + LEVEL_EXTENSION);
+			//map->load (LEVEL_SHARED_NAME + to_string (currentLevel) + LEVEL_EXTENSION);
 			
 			seconds = 0;
 			minutes = 0;
@@ -165,32 +239,44 @@ void Game::handleTime () {
 bool Game::collides (SDL_Rect ballRect, Vector2D ballSpeed, Vector2D &collVector) {
 	bool ballCollides = false;
 	Block* blockPtr = nullptr;
+	itArkObjList it = gameObjects.begin (); // it starts pointing at the map
 
-	// if collides with the blocks...
-	blockPtr = map->collides (ballRect, ballSpeed, collVector);
+	// ----------------------------------------------- if collides with the blocks...
+	//blockPtr = map->collides (ballRect, ballSpeed, collVector);
+	if (dynamic_cast<BlocksMap*>(*it) != nullptr) { 
+		dynamic_cast<BlocksMap*>(*it)->collides (ballRect, ballSpeed, collVector);
+	}
+	else
+		throw ArkanoidError ("Casting error\n");
 	if (blockPtr != nullptr) {
 		int rewardRand = rand () % 6; // random number [0, 5] to check if a reward is created
 		
 		ballCollides = true;
-		map->setBlockNull (blockPtr);
+		dynamic_cast<BlocksMap*>(*it)->setBlockNull (blockPtr);
 
 		if (rewardRand < 1) {
 			createReward (ballRect);
 		}
 	}
 	
-	// if collides with any of the walls...
-	else if (walls[WallType::leftW]->collides (ballRect, collVector) ||
-		walls[WallType::rightW]->collides(ballRect, collVector) ||
-		walls[WallType::topW]->collides(ballRect, collVector)) {
-		
-		ballCollides = true;
-	 }
-
-	// if collides with the paddle...
-	else if (paddle->collides (ballRect, collVector)) {
-		ballCollides = true;
+	++it; // it now points to the first wall
+	// ----------------------------------------------- if collides with any of the walls or the paddle...
+	while (it != firstReward && !ballCollides) { // the paddle is the last object before the rewards
+		ballCollides = (*it)->collides (ballRect, collVector);
+		++it;
 	}
+	//// ----------------------------------------------- if collides with any of the walls...
+	//else if (walls[WallType::leftW]->collides (ballRect, collVector) ||
+	//	walls[WallType::rightW]->collides(ballRect, collVector) ||
+	//	walls[WallType::topW]->collides(ballRect, collVector)) {
+	//	
+	//	ballCollides = true;
+	// }
+
+	//// ---------------------------------------------- if collides with the paddle...
+	//else if (paddle->collides (ballRect, collVector)) {
+	//	ballCollides = true;
+	//}
 
 	return ballCollides;
 }
@@ -198,8 +284,16 @@ bool Game::collides (SDL_Rect ballRect, Vector2D ballSpeed, Vector2D &collVector
 
 bool Game::rewardCollides (SDL_Rect rewardRect) {
 	Vector2D dummyVector2D;
+	bool ret = false;
 
-	return paddle->collides (rewardRect, dummyVector2D);
+	if (dynamic_cast<Paddle*>(*paddleIt) != nullptr) { 
+		ret = dynamic_cast<Paddle*>(*paddleIt)->collides (rewardRect, dummyVector2D);
+	}
+	else
+		throw ArkanoidError ("Casting error\n");
+
+	return ret;
+	//return paddle->collides (rewardRect, dummyVector2D);
 }
 
 
@@ -285,8 +379,7 @@ void Game::saveToFile(string code) {
 	ofstream file;
 
 	file.open (code + SAVE_EXTENSION);
-	if (file.is_open) {
-
+	if (file.is_open()) {
 		file << currentLevel << " " << seconds << " " << minutes << " " << lastTicks << " " << currentTicks << "\n";
 
 		for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ++it) {
@@ -304,7 +397,7 @@ void Game::loadFromFile(string code) {
 	ifstream file;
 
 	file.open(code + SAVE_EXTENSION);
-	if (file.is_open) {
+	if (file.is_open()) {
 		file >> currentLevel >> seconds >> minutes >> lastTicks >> currentTicks;
 
 		for (itArkObjList it = gameObjects.begin(); it != gameObjects.end(); ++it) {

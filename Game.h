@@ -18,6 +18,7 @@
 #include "FileNotFoundError.h"
 #include "FileFormatError.h"
 #include "SDLError.h"
+#include "ArkanoidError.h"
 
 typedef list<ArkanoidObject*>::iterator itArkObjList;
 class Game {
@@ -26,15 +27,19 @@ private:
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 
-	list<ArkanoidObject*> gameObjects;
+	// order...... map; walls; ball; paddle; rewards
+	list<ArkanoidObject*> gameObjects; 
 	itArkObjList firstReward;
 	int numRewards = 0;
 
-	Wall* walls[NUM_WALLS];
+	itArkObjList paddleIt;
+	itArkObjList ballIt;
+
+	//Wall* walls[NUM_WALLS];
 	Texture* textures[NUM_TEXTURES];
-	BlocksMap* map = nullptr;
-	Ball* ball = nullptr;
-	Paddle* paddle = nullptr;
+	//BlocksMap* map = nullptr;
+	//Ball* ball = nullptr;
+	//Paddle* paddle = nullptr;
 	InfoBar* infoBar = nullptr;
 	// PlayerDataManager* playerInfoManager = nullptr;
 
@@ -48,7 +53,6 @@ private:
 	uint lastTicks = 0, currentTicks = 0;
 	uint score = 0;
 
-	uint cellHeight = 20, cellWidth = 60;
 	uint mapHeight, mapWidth;
 
 	// ---------------------- methods ------------------------------------------------------

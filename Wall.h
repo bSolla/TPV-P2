@@ -29,7 +29,7 @@ public:
 	// renders the wall
 	virtual void render ();
 	// checks if the ball collides with the wall and if so, returns the collision vector 
-	bool collides (SDL_Rect ballRect, Vector2D &collVector);
+	virtual bool collides (SDL_Rect ballRect, Vector2D &collVector);
 
 	virtual void loadFromFile (ifstream &file);
 	virtual void saveToFile (ofstream &file);

@@ -28,7 +28,7 @@ public:
 	// given a SDL_Event e, checks for left/right arrows and changes the paddle's speed;
 	virtual void handleEvents (SDL_Event &e);
 	// checks if an object collides with the paddle and if so, returns the collision vector (with a degree proportional to the paddle collision point)
-	bool collides (SDL_Rect objectRect, Vector2D &collVector);
+	virtual bool collides (SDL_Rect objectRect, Vector2D &collVector);
 	// updates the paddle position
 	virtual void update ();
 

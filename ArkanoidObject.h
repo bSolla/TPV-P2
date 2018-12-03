@@ -28,6 +28,8 @@ public:
 
 	virtual SDL_Rect getRect();
 
+	virtual bool collides (const SDL_Rect& rect, Vector2D& collVector) { return false; };
+
 	virtual void render ();
 
 	virtual void update() = 0;

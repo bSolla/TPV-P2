@@ -2,6 +2,7 @@
 #define REWARD_H
 
 #include "MovingObject.h"
+#include <list>
 
 // ----------- Function object hierarchy to manage the effects of each reward ------------------------
 // Base class Action
@@ -69,7 +70,7 @@ public:
 
 	virtual void update ();
 
-	virtual void handleEvents (SDL_Event &e);
+	virtual void handleEvents (SDL_Event &e) {}
 
 	virtual void loadFromFile (ifstream &file);
 	virtual void saveToFile (ofstream &file);

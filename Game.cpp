@@ -1,7 +1,5 @@
 #include "Game.h"
 
-// TODO: CLEAN UP THE COMMENTS
-
 
 Game::Game () {
 	iniSDL ();
@@ -89,7 +87,7 @@ void Game::manageMenu () {
 					try {
 						menuLoadFromFile ();
 					}
-					catch (FileNotFoundError err) {
+					catch (...) {
 						loadMenu ();
 						click = false;
 					}
@@ -140,10 +138,13 @@ void Game::menuLoadFromFile () {
 	} while (number != -1 && !end);
 
 	fileName = LEVELS_PATH + numberSequence.str () + LEVEL_EXTENSION;
-	
+
 	try { loadFromFile (numberSequence.str ()); }
-	catch (...) {
-		throw FileNotFoundError (numberSequence.str () + LEVEL_EXTENSION);
+	catch (FileFormatError err) {
+		cout << err.what ();
+	}
+	catch (ArkanoidError err) {
+			cout << err.what ();
 	}
 }
 
@@ -300,8 +301,13 @@ void Game::handleEvents () {
 		}
 		else {
 			if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_s) {
-				string code = pickFileName ();
-				saveToFile (code);
+				try {
+					string code = pickFileName ();
+					saveToFile (code);
+				}
+				catch (ArkanoidError err) {
+					cout << err.what ();
+				}
 			}
 			else {
 				for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ++it) {
@@ -411,7 +417,6 @@ bool Game::rewardCollides (SDL_Rect rewardRect) {
 		throw ArkanoidError ("Casting error\n");
 
 	return ret;
-	//return paddle->collides (rewardRect, dummyVector2D);
 }
 
 
@@ -495,45 +500,56 @@ string Game::pickFileName () {
 	stringstream name;
 
 	while (!done) {
-		if (SDL_PollEvent (&sdlEvent)) {
-			if (sdlEvent.type == SDL_KEYDOWN) {
-				switch (sdlEvent.key.keysym.sym) {
-				case SDLK_0:
-					name << "0";
-					break;
-				case SDLK_1:
-					name << "1";
-					break;
-				case SDLK_2:
-					name << "2";
-					break;
-				case SDLK_3:
-					name << "3";
-					break;
-				case SDLK_4:
-					name << "4";
-					break;
-				case SDLK_5:
-					name << "5";
-					break;
-				case SDLK_6:
-					name << "6";
-					break;
-				case SDLK_7:
-					name << "7";
-					break;
-				case SDLK_8:
-					name << "8";
-					break;
-				case SDLK_9:
-					name << "9";
-					break;
-				case SDLK_RETURN:
-					done = true;
-				default:
-					break;
-				}// switch
+		try {
+			if (SDL_PollEvent (&sdlEvent)) {
+				if (sdlEvent.type == SDL_QUIT) {
+					end = true;
+					throw (ArkanoidError ("Aborted save\n"));
+				}
+				if (sdlEvent.type == SDL_KEYDOWN) {
+					switch (sdlEvent.key.keysym.sym) {
+					case SDLK_0:
+						name << "0";
+						break;
+					case SDLK_1:
+						name << "1";
+						break;
+					case SDLK_2:
+						name << "2";
+						break;
+					case SDLK_3:
+						name << "3";
+						break;
+					case SDLK_4:
+						name << "4";
+						break;
+					case SDLK_5:
+						name << "5";
+						break;
+					case SDLK_6:
+						name << "6";
+						break;
+					case SDLK_7:
+						name << "7";
+						break;
+					case SDLK_8:
+						name << "8";
+						break;
+					case SDLK_9:
+						name << "9";
+						break;
+					case SDLK_RETURN:
+						done = true;
+					default:
+						throw (FileFormatError (WRONG_TYPE));
+						break;
+					}// switch
+				}
 			}
+		}
+		catch (FileFormatError err) {
+			cout << err.what ();
+			cout << "Only numbers from 0 to 9 valid\n";
 		}
 	}// while !done
 
@@ -564,7 +580,7 @@ void Game::saveToFile(string code) {
 		file.close ();
 	}
 	else
-		throw FileNotFoundError (code + SAVE_EXTENSION);
+		throw (FileNotFoundError (code + SAVE_EXTENSION));
 }
 
 
@@ -577,6 +593,10 @@ void Game::loadFromFile(string code) {
 
 		file >> currentLevel >> seconds >> minutes;
 		
+		if (currentLevel > MAX_LEVEL) {
+			throw FileFormatError ("Level bigger than the maximum level\n");
+		}
+
 		gameObjects.push_back (new BlocksMap (this));
 
 		gameObjects.push_back (new Wall (this, textures[TextureNames::sideWall])); //leftW

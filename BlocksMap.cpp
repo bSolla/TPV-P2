@@ -167,6 +167,10 @@ void BlocksMap::loadFromFile (ifstream &file) {
 
 	file >> rows >> cols;
 
+	if (rows < 1 || cols < 1) {
+		throw FileFormatError (WRONG_MAP_SIZE);
+	}
+
 	mapWidth = cellWidth * cols + cellHeight * 2; // to account for the walls we add cellHeight * 2 (the thickness of the walls is the same as the height of the rest of sprites)
 	mapHeight = 2 * (cellHeight * rows) + cellHeight * 2;
 
@@ -183,6 +187,10 @@ void BlocksMap::loadFromFile (ifstream &file) {
 	for (uint r = 0; r < rows; ++r) {
 		for (uint c = 0; c < cols; ++c) {
 			file >> color;
+
+			if (color < 0 || color > 6) {
+				throw FileFormatError (WRONG_COLOR);
+			}
 
 			if (color == 0) { 
 				cells[r][c] = nullptr;

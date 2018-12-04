@@ -5,6 +5,7 @@
 #include "Vector2D.h"
 #include "Texture.h"
 #include "Utilities.h"
+#include "FileFormatError.h"
 
 class Game;
 

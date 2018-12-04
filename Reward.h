@@ -55,10 +55,13 @@ private:
 	list<ArkanoidObject*>::iterator itList;
 
 	double verticalSpeed = 4;
+	int spriteSheetCol = 0;
+	int spriteSheetRow = 0;
 
 // ---------------------- methods ------------------------------------------------------
 private:
 	void setActionType (RewardType rewardType);
+	void setSprites (RewardType rewardType);
 
 public:
 	Reward (Game *gamePtr, RewardType rewardType);

@@ -31,6 +31,7 @@ void rewardAction (Game *gamePtr, Action *action) {
 Reward::Reward (Game *gamePtr, RewardType rewardType) {
 	game = gamePtr;
 	setActionType (rewardType);
+	setSprites (rewardType);
 
 	speed.setY (verticalSpeed);
 	width = STANDARD_CELL_HEIGHT * 1.5;
@@ -64,8 +65,33 @@ void Reward::setActionType (RewardType rewardType) {
 }
 
 
+void Reward::setSprites (RewardType rewardType) {
+	switch (rewardType) {
+	case L: 
+		spriteSheetRow = 0;
+		break;
+	case R:
+		spriteSheetRow = 4;
+		break;
+	case E:
+		spriteSheetRow = 1;
+		break;
+	case S:
+		spriteSheetRow = 3;
+		break;
+	default:
+		break;
+	}
+}
+
+
 void Reward::update () {
 	int paddleY = game->getMapHeight () - STANDARD_CELL_HEIGHT * 3; // one cell used by the info bar, other one as a spacer, and the paddle cell height
+
+	spriteSheetCol++;
+	if (spriteSheetCol >= texture->getNumCols ()) {
+		spriteSheetCol = 0;
+	}	
 
 	MovingObject::update ();
 
@@ -82,7 +108,7 @@ void Reward::update () {
 
 
 void Reward::render () {
-	texture->renderFrame (getRect (), 0, 0);
+	texture->renderFrame (getRect (), spriteSheetRow, spriteSheetCol);
 }
 
 

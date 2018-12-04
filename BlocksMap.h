@@ -32,7 +32,7 @@ public:
 	Block* collides (const SDL_Rect& ballRect, const Vector2D& ballVel, Vector2D& collVector);
 	Block* blockAt (const Vector2D& p);
 	// renders the whole Block matrix
-	void render () const;
+	virtual void render ();
 	
 	// checks if the level is clear, and if so calls game->setLevelClear
 	virtual void update ();

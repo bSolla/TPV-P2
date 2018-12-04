@@ -128,7 +128,7 @@ void BlocksMap::setBlockNull (Block* blockPtr) {
 }
 
 
-void BlocksMap::render () const {
+void BlocksMap::render (){
 	for (int r = 0; r < rows; ++r) {
 		for (int c = 0; c < cols; ++c) {
 			if (cells[r][c] != nullptr)

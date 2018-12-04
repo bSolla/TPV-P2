@@ -12,6 +12,14 @@ void RewardLife::operator()(Game *gamePtr) {
 }
 
 
+void EnlargePaddle::operator()(Game * gamePtr) {
+	gamePtr->setPaddleSize (MAKE_PADDLE_BIGGER);
+}
+
+void ShrinkPaddle::operator()(Game * gamePtr) {
+	gamePtr->setPaddleSize (MAKE_PADDLE_SMALLER);
+}
+
 void rewardAction (Game *gamePtr, Action *action) {
 	return (*action)(gamePtr);
 }
@@ -23,6 +31,11 @@ void rewardAction (Game *gamePtr, Action *action) {
 Reward::Reward (Game *gamePtr, RewardType rewardType) {
 	game = gamePtr;
 	setActionType (rewardType);
+
+	speed.setY (verticalSpeed);
+	width = STANDARD_CELL_HEIGHT * 1.5;
+	height = STANDARD_CELL_HEIGHT / 2;
+	texture = game->getTexture (TextureNames::rewards);
 }
 
 
@@ -40,10 +53,10 @@ void Reward::setActionType (RewardType rewardType) {
 		action = new RewardLife ();
 		break;
 	case E:
-		// fill
+		action = new EnlargePaddle ();
 		break;
 	case S:
-		// fill
+		action = new ShrinkPaddle ();
 		break;
 	default:
 		break;
@@ -57,7 +70,7 @@ void Reward::update () {
 	MovingObject::update ();
 
 	if (position.getY () > paddleY) {
-		if (game->rewardCollides (SDL_Rect { int(position.getX ()), int(position.getY ()), STANDARD_CELL_HEIGHT, STANDARD_CELL_WIDTH })) {
+		if (game->rewardCollides (getRect())) {
 			rewardAction (game, action);
 			game->killObject (itList);
 		}
@@ -68,9 +81,16 @@ void Reward::update () {
 }
 
 
+void Reward::render () {
+	texture->renderFrame (getRect (), 0, 0);
+}
+
+
 void Reward::loadFromFile (ifstream & file) {
 }
 
 
 void Reward::saveToFile (ofstream & file) {
 }
+
+

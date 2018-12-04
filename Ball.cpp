@@ -8,8 +8,8 @@ Ball::Ball (Game* gamePtr) {
 
 	height = cellSize; 
 	width = cellSize;
-	speed.setX (MAX_SPEED_MODULE * -0.5);
-	speed.setY (MAX_SPEED_MODULE * -0.5);
+	speed.setX (MAX_SPEED_MODULE * -0.6);
+	speed.setY (MAX_SPEED_MODULE * -0.6);
 }
 
 
@@ -31,10 +31,9 @@ void Ball::render () {
 
 
 void Ball::checkCollisions () {
-	SDL_Rect ballRect { position.getX (), position.getY (), cellSize, cellSize };
 	Vector2D collVect;
 
-	if (game->collides (ballRect, speed, collVect)) {
+	if (game->collides (this->getRect(), speed, collVect)) {
 		if (collVect.getX () == 0.0) {
 			speed.setY (-1 * speed.getY ());
 		}

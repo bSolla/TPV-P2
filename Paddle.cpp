@@ -21,6 +21,14 @@ void Paddle::render() {
 }
 
 
+void Paddle::changeSize (double scale) {
+	uint newWidth = width * scale;
+
+	if (newWidth < MAX_PADDLE_WIDTH && newWidth > MIN_PADDLE_WIDTH)
+		width = newWidth;
+}
+
+
 void Paddle::setInitialPosition (int mapWidth, int verticalOffset) {
 	position.setX (double (mapWidth) / 2);
 	position.setY (double (verticalOffset));

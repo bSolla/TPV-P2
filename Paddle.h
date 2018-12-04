@@ -25,6 +25,8 @@ public:
 	virtual void render();
 	// initializes the paddle position to the middle of the map and a vertical offset
 	void setInitialPosition (int mapWidth, int verticalOffset);
+	// changes the size of the paddle based on a scale
+	void changeSize (double scale);
 	// given a SDL_Event e, checks for left/right arrows and changes the paddle's speed;
 	virtual void handleEvents (SDL_Event &e);
 	// checks if an object collides with the paddle and if so, returns the collision vector (with a degree proportional to the paddle collision point)

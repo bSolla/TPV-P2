@@ -21,13 +21,7 @@ Game::Game () {
 	paddleIt = gameObjects.end (); // paddleIt set past the end
 	paddleIt--; //paddleIt actually pointing to the position in the list
 
-	//walls[WallType::leftW] = new Wall (this, textures[TextureNames::sideWall]);
-	//walls[WallType::rightW] = new Wall (this, textures[TextureNames::sideWall]);
-	//walls[WallType::topW] = new Wall (this, textures[TextureNames::topWall]);
-	//		
-	//ball = new Ball(this);
-	//paddle = new Paddle(this);
-	//map = new BlocksMap(this);
+	firstReward = gameObjects.end ();
 
 	// playerInfoManager = new PlayerDataManager ();
 	if (dynamic_cast<BlocksMap*>(*gameObjects.begin ()) != nullptr) {
@@ -35,7 +29,6 @@ Game::Game () {
 	}
 	else
 		throw ArkanoidError ("Casting error\n");
-	//map->load(LEVEL_SHARED_NAME + to_string(currentLevel) + LEVEL_EXTENSION);
 
 	infoBar = new InfoBar (this);
 
@@ -44,13 +37,6 @@ Game::Game () {
 
 
 Game::~Game () {
-	//delete ball;
-	//delete paddle;
-	//delete map;
-	//delete infoBar;
-	//for (uint i = 0; i < NUM_WALLS; ++i) {
-	//	delete walls[i];
-	//}
 	for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ++it) {
 		delete (*it);
 	}
@@ -78,17 +64,6 @@ void Game::iniSDL () {
 
 
 void Game::iniTextures () {
-
-	//try {
-	//	for (uint i = 0; i < NUM_TEXTURES; ++i) {
-	//		textures[i] = new Texture(renderer, IMAGES_PATH + TEXTURE_ATTRIBUTES[i].filename, TEXTURE_ATTRIBUTES[i].rows, TEXTURE_ATTRIBUTES[i].cols);
-	//	}
-	//}
-
-	//catch (SDLError error) {
-	//	throw SDLError(SDL_GetError());
-	//}
-
 	string errorMsg;
 
 	for (uint i = 0; i < NUM_TEXTURES; ++i) {
@@ -132,9 +107,6 @@ void Game::scaleObjects (uint newMapWidth, uint newMapHeight) {
 	}
 	else
 		throw ArkanoidError ("Casting error\n");
-	//walls[WallType::leftW]->setScale (mapHeight - STANDARD_CELL_HEIGHT, WALL_THICKNESS, WallType::leftW); // -STANDARD_CELL_HEIGHT to account for the info bar
-	//walls[WallType::rightW]->setScale (mapHeight - STANDARD_CELL_HEIGHT, WALL_THICKNESS, WallType::rightW);
-	//walls[WallType::topW]->setScale (WALL_THICKNESS, mapWidth, WallType::topW);
 
 	SDL_SetWindowSize (window, mapWidth, mapHeight);
 }
@@ -154,15 +126,15 @@ void Game::positionObjects () {
 	}
 	else
 		throw ArkanoidError ("Casting error\n");
-	//paddle->setInitialPosition (mapWidth, mapHeight - cellHeight * 3);
-	//ball->setInitialPosition (mapWidth, mapHeight - cellHeight * 4);
 }
 
 
-void Game::renderBackground () const{
-	//for (uint i = 0; i < NUM_WALLS; ++i) {
-	//	walls[i]->render ();
-	//}
+void Game::setPaddleSize (double scale) {
+	if (dynamic_cast<Paddle*>(*paddleIt) != nullptr) { 
+		dynamic_cast<Paddle*>(*paddleIt)->changeSize (scale);
+	}
+	else
+		throw ArkanoidError ("Casting error\n");
 }
 
 
@@ -242,14 +214,14 @@ bool Game::collides (SDL_Rect ballRect, Vector2D ballSpeed, Vector2D &collVector
 	itArkObjList it = gameObjects.begin (); // it starts pointing at the map
 
 	// ----------------------------------------------- if collides with the blocks...
-	//blockPtr = map->collides (ballRect, ballSpeed, collVector);
 	if (dynamic_cast<BlocksMap*>(*it) != nullptr) { 
-		dynamic_cast<BlocksMap*>(*it)->collides (ballRect, ballSpeed, collVector);
+		blockPtr = dynamic_cast<BlocksMap*>(*it)->collides (ballRect, ballSpeed, collVector);
 	}
 	else
 		throw ArkanoidError ("Casting error\n");
 	if (blockPtr != nullptr) {
-		int rewardRand = rand () % 6; // random number [0, 5] to check if a reward is created
+		srand (currentTicks);
+		int rewardRand = rand () % 3; // random number [0, 5] to check if a reward is created
 		
 		ballCollides = true;
 		dynamic_cast<BlocksMap*>(*it)->setBlockNull (blockPtr);
@@ -265,18 +237,6 @@ bool Game::collides (SDL_Rect ballRect, Vector2D ballSpeed, Vector2D &collVector
 		ballCollides = (*it)->collides (ballRect, collVector);
 		++it;
 	}
-	//// ----------------------------------------------- if collides with any of the walls...
-	//else if (walls[WallType::leftW]->collides (ballRect, collVector) ||
-	//	walls[WallType::rightW]->collides(ballRect, collVector) ||
-	//	walls[WallType::topW]->collides(ballRect, collVector)) {
-	//	
-	//	ballCollides = true;
-	// }
-
-	//// ---------------------------------------------- if collides with the paddle...
-	//else if (paddle->collides (ballRect, collVector)) {
-	//	ballCollides = true;
-	//}
 
 	return ballCollides;
 }
@@ -298,6 +258,7 @@ bool Game::rewardCollides (SDL_Rect rewardRect) {
 
 
 void Game::createReward (SDL_Rect rect) {
+	srand (currentTicks);
 	int rewardType = rand () % 4;
 	Reward *r = new Reward (this, RewardType (rewardType));
 	r->setPosition (rect);
@@ -325,26 +286,20 @@ void Game::killObject (itArkObjList it) {
 void Game::render () const {
 	SDL_RenderClear (renderer);
 
-	renderBackground ();
-	//map->render ();
-	//paddle->render ();
-	//ball->render ();
 	for (auto it = gameObjects.begin (); it != gameObjects.end (); ++it) {
 		(*it)->render ();
 	}
 
-	infoBar->render (seconds, minutes, currentLevel);
+	infoBar->render (seconds, minutes, currentLevel, lives);
 
 	SDL_RenderPresent (renderer);
 }
 
 
 void Game::update () {
-	//ball->update();
-	//paddle->update();
-	//map->update ();
+	itArkObjList it = gameObjects.begin ();
 
-	for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ) {
+	while (it != gameObjects.end () && !levelClear) {
 		itArkObjList next = it;
 		++next;
 		(*it)->update ();

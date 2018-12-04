@@ -11,7 +11,8 @@ class Game;
 class ArkanoidObject : public GameObject {
 protected:
 	Vector2D position;
-	int width = STANDARD_CELL_WIDTH, height = STANDARD_CELL_HEIGHT;
+	int width = STANDARD_CELL_WIDTH;
+	int height = STANDARD_CELL_HEIGHT;
 
 	Texture* texture = nullptr;
 	Game* game = nullptr;
@@ -28,7 +29,7 @@ public:
 
 	virtual SDL_Rect getRect();
 
-	virtual bool collides (const SDL_Rect& rect, Vector2D& collVector) { return false; };
+	virtual bool collides (SDL_Rect objectRect, Vector2D &collVector) { return false; };
 
 	virtual void render ();
 

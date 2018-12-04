@@ -27,13 +27,11 @@ public:
 };
 
 
-// TODO: FINISH THESE TWO ACTIONS
-
 // Make the paddle longer
 class EnlargePaddle : public Action {
 public:
 	EnlargePaddle() {}
-	virtual void operator()(Game* gamePtr) { std::cout << "paddle enlarged\n"; }
+	virtual void operator()(Game* gamePtr);
 };
 
 
@@ -41,7 +39,7 @@ public:
 class ShrinkPaddle : public Action {
 public:
 	ShrinkPaddle() {}
-	virtual void operator()(Game *gamePtr) { std::cout << "paddle shrunk\n"; }
+	virtual void operator()(Game *gamePtr);
 };
 
 
@@ -51,10 +49,12 @@ enum RewardType {L, R, E, S};
 class Reward : public MovingObject {
 // --------------------- variables------------------------------------------------------
 private:
-	Action *action;
-	Game *game;
+	Action *action = nullptr;
+	Game *game = nullptr;
 
 	list<ArkanoidObject*>::iterator itList;
+
+	double verticalSpeed = 4;
 
 // ---------------------- methods ------------------------------------------------------
 private:
@@ -69,6 +69,8 @@ public:
 	void setPosition (const SDL_Rect &rect) { position.setX (rect.x); position.setY (rect.y); }
 
 	virtual void update ();
+
+	virtual void render ();
 
 	virtual void handleEvents (SDL_Event &e) {}
 

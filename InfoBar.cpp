@@ -21,16 +21,20 @@ InfoBar::~InfoBar () {
 
 	delete textures[TextureTypes::level];
 	textures[TextureTypes::level] = nullptr;
+
+	delete textures[TextureTypes::lives];
+	textures[TextureTypes::lives] = nullptr;
 }
 
 
 void InfoBar::loadTextures () {
 	textures[TextureTypes::numbers] = new Texture (game->getRenderer (), TEXTURE_NAME_NUMBERS, 1, 11);
 	textures[TextureTypes::level] = new Texture (game->getRenderer (), TEXTURE_NAME_LEVEL);
+	textures[TextureTypes::lives] = new Texture (game->getRenderer (), TEXTURE_NAME_LIVES);
 }
 
 
-void InfoBar::render (uint seconds, uint minutes, uint currentLevel) {
+void InfoBar::render (uint seconds, uint minutes, uint currentLevel, uint lives) {
 	uint cellWidth = mapWidth / N_DIVISIONS;
 	SDL_Rect destRect { position.getX (), position.getY (), cellWidth, cellHeight };
 
@@ -57,6 +61,15 @@ void InfoBar::render (uint seconds, uint minutes, uint currentLevel) {
 	textures[TextureTypes::numbers]->renderFrame (destRect, 0, currentLevel / 10); // renders the first digit (level)
 	destRect.x += cellWidth;
 	textures[TextureTypes::numbers]->renderFrame (destRect, 0, currentLevel % 10); // renders the last digit (level)
+	destRect.x += cellWidth * 2;
+
+	// renders the lives info with format Lives x
+	destRect.w = cellWidth * 4;
+	textures[TextureTypes::lives]->render (destRect);
+	destRect.x += cellWidth * 4;
+
+	destRect.w = cellWidth;
+	textures[TextureTypes::numbers]->renderFrame (destRect, 0, lives % 10); // renders the last digit (level)
 }
 
 

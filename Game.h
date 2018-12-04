@@ -69,7 +69,8 @@ public:
 	// setter functions
 	void setLevelClear() { levelClear = true; }
 	void setGameOver() { gameOver = true; }
-	void increaseLives() { lives++; }
+	void increaseLives() { if (lives < MAX_LIVES) lives++; }
+	void setPaddleSize (double scale);
 
 	// takes in the map dimensions calculated in BlocksMap::load() and scales the walls and window to fit accordingly
 	void scaleObjects(uint newMapWidth, uint newMapHeight);
@@ -90,9 +91,7 @@ private:
 	// gives the ball and paddle their initial positions, calculated from the map dimensions
 	void positionObjects();
 
-	// renders the walls
-	void renderBackground() const;
-	// polls events, and checks for quit events. also calls Paddle::handleEvents(SDL_Event &e), which handles keyboard events
+	// polls events, and checks for quit events. also calls handleEvents(SDL_Event &e) for all the objects in the list
 	void handleEvents();
 	// if the control bool levelClear is true, deletes the old BlocksMap, creates a new one and reads all the corresponding info
 	void handleLevelUp();
@@ -100,9 +99,9 @@ private:
 	void handleTime();
 	// creates a new reward positioned where the ball hit a block (using the ball SDL_Rect)
 	void createReward(SDL_Rect rect);
-	// calls the respective render methods from ball, paddle and map and then draws 
+	// polymorphic call to render()
 	void render() const;
-	// calls the update methods from ball and paddle
+	// polymorphic call to update()
 	void update();
 
 	// destroys both renderer and window and quits SDL

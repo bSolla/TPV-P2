@@ -16,6 +16,7 @@ void ArkanoidObject::render (){
 	texture->render (getRect ());
 }
 
+
 SDL_Rect ArkanoidObject::getRect () {
 	SDL_Rect rect { position.getX (), position.getY (), width, height };
 

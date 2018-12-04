@@ -69,7 +69,7 @@ void Ball::update () {
 	checkCollisions ();
 
 	if (checkBallOut ()) {
-		game->setGameOver ();
+		game->decreaseLives ();
 	}
 }
 

@@ -68,6 +68,7 @@ public:
 	void setLevelClear() { levelClear = true; }
 	void setGameOver() { gameOver = true; }
 	void increaseLives() { if (lives < MAX_LIVES) lives++; }
+	void decreaseLives () { lives--; if (lives == 0) setGameOver (); else positionObjects (); }
 	void setPaddleSize (double scale);
 	void setMapSize (int w, int h) { mapWidth = w; mapHeight = h; }
 

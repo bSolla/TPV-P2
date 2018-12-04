@@ -321,6 +321,10 @@ void Game::handleLevelUp () {
 
 		delete infoBar; // delete the old info bar to make a new one
 
+		while (numRewards > 0) {
+			killObject (firstReward);
+		}
+
 		currentLevel++;
 
 		// playerInfoManager->checkTime (seconds, minutes);
@@ -484,12 +488,6 @@ void Game::run () {
 }
 
 
-void Game::quitSDL () {
-	SDL_DestroyRenderer (renderer);
-	SDL_DestroyWindow (window);
-	SDL_Quit ();
-}
-
 
 string Game::pickFileName () {
 	SDL_Event sdlEvent;
@@ -549,7 +547,7 @@ void Game::saveToFile(string code) {
 
 	file.open (LEVELS_PATH + code + SAVE_EXTENSION);
 	if (file.is_open()) {
-		file << currentLevel << " " << seconds << " " << minutes << " " << lastTicks << " " << currentTicks << "\n";
+		file << currentLevel << " " << seconds << " " << minutes << "\n";
 
 		for (itArkObjList it = gameObjects.begin (); it != firstReward; ++it) {
 			(*it)->saveToFile (file);
@@ -577,7 +575,7 @@ void Game::loadFromFile(string code) {
 	if (file.is_open()) {
 		menu = false;
 
-		file >> currentLevel >> seconds >> minutes >> lastTicks >> currentTicks;
+		file >> currentLevel >> seconds >> minutes;
 		
 		gameObjects.push_back (new BlocksMap (this));
 
@@ -623,3 +621,11 @@ void Game::loadFromFile(string code) {
 		throw FileNotFoundError(code + SAVE_EXTENSION);
 
 }
+
+
+void Game::quitSDL () {
+	SDL_DestroyRenderer (renderer);
+	SDL_DestroyWindow (window);
+	SDL_Quit ();
+}
+

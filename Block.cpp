@@ -36,7 +36,7 @@ void Block::render () {
 
 
 void Block::saveToFile (ofstream &file) {
-	file << int (color) << " ";
+	file << int (color) + 1 << " "; //add 1 because color in the file starts from 1
 }
 
 

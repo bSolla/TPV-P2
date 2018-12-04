@@ -9,8 +9,8 @@ struct TextureAttributes {
 	unsigned int cols;
 	unsigned int rows;
 };
-// added the underscores after ball and paddle to avoid mixing them with the variables ball and paddle
-enum TextureNames { ball_, bricks, paddle_, sideWall, topWall, rewards };
+// added the underscores to avoid mixing them with the variables
+enum TextureNames { ball_, bricks, paddle_, sideWall, topWall, rewards, play_, load_, instructions, menuNumbers};
 
 
 // ---------------------- constants -----------------------------------------------------
@@ -29,7 +29,7 @@ const unsigned int WIN_HEIGHT = 600;
 const unsigned int WIN_X = SDL_WINDOWPOS_CENTERED;
 const unsigned int WIN_Y = SDL_WINDOWPOS_CENTERED;
 
-const unsigned int NUM_TEXTURES = 6;
+const unsigned int NUM_TEXTURES = 10;
 const unsigned int NUM_WALLS = 3;
 
 const unsigned int DELAY = 60;
@@ -42,13 +42,17 @@ const TextureAttributes TEXTURE_ATTRIBUTES[NUM_TEXTURES] =
 		{ "paddle.png", 1, 1 },
 		{ "side.png", 1, 1 },
 		{ "topSide.png", 1, 1 },
-		{ "rewards.png", 8, 10}
+		{ "rewards.png", 8, 10},
+		{ "play.png", 1, 1},
+		{ "load.png", 1, 1},
+		{ "instructions.png", 1, 1},
+		{ "menuNumbers.png", 10, 1}
 	};
 
 
 const string LEVEL_SHARED_NAME = "level0";
 const string LEVEL_EXTENSION = ".ark";
-const string SAVE_EXTENSION = ".txt";
+const string SAVE_EXTENSION = ".ark";
 const unsigned int MAX_LEVEL = 3;
 
 const unsigned int MAX_LIVES = 5;

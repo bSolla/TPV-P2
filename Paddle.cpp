@@ -93,9 +93,13 @@ void Paddle::update () {
 
 void Paddle::saveToFile (ofstream &file) {
 	MovingObject::saveToFile (file);
+
+	file << width;
 }
 
 
 void Paddle::loadFromFile (ifstream &file) {
 	MovingObject::loadFromFile (file);
+
+	file >> width;
 }

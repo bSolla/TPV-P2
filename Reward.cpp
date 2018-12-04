@@ -30,9 +30,19 @@ void rewardAction (Game *gamePtr, Action *action) {
 // ----------------------------------  R E W A R D S  -----------------------------------------------
 Reward::Reward (Game *gamePtr, RewardType rewardType) {
 	game = gamePtr;
+	speed.setY (verticalSpeed);
+	width = STANDARD_CELL_HEIGHT * 1.5;
+	height = STANDARD_CELL_HEIGHT / 2;
+	texture = game->getTexture (TextureNames::rewards);
+
 	setActionType (rewardType);
 	setSprites (rewardType);
+	type = rewardType;
+}
 
+
+Reward::Reward (Game *gamePtr) {
+	game = gamePtr;
 	speed.setY (verticalSpeed);
 	width = STANDARD_CELL_HEIGHT * 1.5;
 	height = STANDARD_CELL_HEIGHT / 2;
@@ -113,10 +123,21 @@ void Reward::render () {
 
 
 void Reward::loadFromFile (ifstream & file) {
+	int aux;
+
+	MovingObject::loadFromFile (file);
+
+	file >> aux;
+	type = RewardType (aux);
+
+	setActionType (type);
+	setSprites (type);
 }
 
 
 void Reward::saveToFile (ofstream & file) {
+	MovingObject::saveToFile (file);
+	file << int(type);
 }
 
 

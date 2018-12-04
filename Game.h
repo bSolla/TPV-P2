@@ -4,6 +4,7 @@
 #include <new>
 #include <string>
 #include <list>
+//#include <SDL_ttf.h>
 #include "checkML.h"
 #include "Utilities.h"
 #include "Texture.h"
@@ -35,17 +36,14 @@ private:
 	itArkObjList paddleIt;
 	itArkObjList ballIt;
 
-	//Wall* walls[NUM_WALLS];
 	Texture* textures[NUM_TEXTURES];
-	//BlocksMap* map = nullptr;
-	//Ball* ball = nullptr;
-	//Paddle* paddle = nullptr;
 	InfoBar* infoBar = nullptr;
 	// PlayerDataManager* playerInfoManager = nullptr;
 
 	bool end = false;
 	bool gameOver = false;
 	bool levelClear = false;
+	bool menu = true;
 
 	uint lives = 3;
 	uint currentLevel = 1;
@@ -71,6 +69,7 @@ public:
 	void setGameOver() { gameOver = true; }
 	void increaseLives() { if (lives < MAX_LIVES) lives++; }
 	void setPaddleSize (double scale);
+	void setMapSize (int w, int h) { mapWidth = w; mapHeight = h; }
 
 	// takes in the map dimensions calculated in BlocksMap::load() and scales the walls and window to fit accordingly
 	void scaleObjects(uint newMapWidth, uint newMapHeight);
@@ -88,6 +87,22 @@ private:
 	void iniSDL();
 	// initializes all textures
 	void iniTextures();
+
+	// loads the menu
+	void loadMenu ();
+	// manages the menu
+	void manageMenu ();
+	// reads the code file and loads that file if it exists
+	void menuLoadFromFile ();
+	// renders the instructions screen for entering the file code for loading
+	void renderInstructions ();
+	// renders a number "keyboard" to use for entering the file code for loading
+	void renderNumberButtons ();
+	// returns true if the player clicked on one of the numbers or the "done" button, and returns a reference to said number (-1=done)
+	bool handleNumberButtons (SDL_Event SDLevent, int &number);
+
+	// initializes all game objects
+	void playScene ();
 	// gives the ball and paddle their initial positions, calculated from the map dimensions
 	void positionObjects();
 
@@ -107,6 +122,9 @@ private:
 	// destroys both renderer and window and quits SDL
 	void quitSDL();
 
+	// pauses the game and saves numeric keyboard input as the file name
+	string pickFileName ();
+	// saves the current state on the game in file code.ark
 	void saveToFile(string code);
 
 	void loadFromFile(string code);

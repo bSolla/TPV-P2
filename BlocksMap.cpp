@@ -27,6 +27,7 @@ void BlocksMap::load (const string & filename) {
 	}
 	else {
 		BlocksMap::loadFromFile (file);
+		game->scaleObjects (mapWidth, mapHeight);
 
 		file.close ();
 	}
@@ -169,7 +170,7 @@ void BlocksMap::loadFromFile (ifstream &file) {
 	mapWidth = cellWidth * cols + cellHeight * 2; // to account for the walls we add cellHeight * 2 (the thickness of the walls is the same as the height of the rest of sprites)
 	mapHeight = 2 * (cellHeight * rows) + cellHeight * 2;
 
-	game->scaleObjects (mapWidth, mapHeight);
+	game->setMapSize (mapWidth, mapHeight);
 
 	// pointer initialization
 	cells = new Block**[rows];

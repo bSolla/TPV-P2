@@ -57,6 +57,7 @@ private:
 	double verticalSpeed = 4;
 	int spriteSheetCol = 0;
 	int spriteSheetRow = 0;
+	RewardType type;
 
 // ---------------------- methods ------------------------------------------------------
 private:
@@ -65,6 +66,7 @@ private:
 
 public:
 	Reward (Game *gamePtr, RewardType rewardType);
+	Reward (Game *gamePtr);
 	~Reward ();
 
 	// used to set the iterator to the position of the list the reward is in 

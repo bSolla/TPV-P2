@@ -6,7 +6,200 @@
 Game::Game () {
 	iniSDL ();
 	iniTextures ();
+}
+
+
+Game::~Game () {
+	for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ++it) {
+		delete (*it);
+	}
+
+	// delete playerInfoManager
+
+	for (uint i = 0; i < NUM_TEXTURES; ++i) {
+		delete textures[i];
+	}
+
+	quitSDL ();
+}
+
+
+void Game::iniSDL () {
+	SDL_Init(SDL_INIT_EVERYTHING); 
 	
+	window = SDL_CreateWindow("test", WIN_X, WIN_Y, WIN_WIDTH, WIN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE); 
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); 
+	
+	if (window == nullptr || renderer == nullptr) {
+		throw SDLError(SDL_GetError());
+	}
+}
+
+
+void Game::iniTextures () {
+	string errorMsg;
+
+	for (uint i = 0; i < NUM_TEXTURES; ++i) {
+		textures[i] = new Texture(renderer, IMAGES_PATH + TEXTURE_ATTRIBUTES[i].filename, TEXTURE_ATTRIBUTES[i].rows, TEXTURE_ATTRIBUTES[i].cols);
+	}
+
+	errorMsg = SDL_GetError();
+	if (errorMsg != "")
+		throw SDLError(errorMsg);
+}
+
+
+void Game::loadMenu () {
+	SDL_SetWindowSize (window, WIN_WIDTH, WIN_HEIGHT);
+	SDL_Rect destRect { 0, 0, WIN_WIDTH, WIN_HEIGHT / (uint)2 };
+
+	SDL_RenderClear (renderer);
+
+	textures[TextureNames::play_]->render (destRect);
+	destRect.y = WIN_HEIGHT / 2;
+	textures[TextureNames::load_]->render (destRect);
+
+	SDL_RenderPresent (renderer);
+}
+
+
+void Game::manageMenu () {
+	SDL_Event ev;
+	bool click = false;
+	menu = true;
+	int mouseX, mouseY;
+
+	loadMenu ();
+
+	do {
+		if (SDL_PollEvent (&ev)) {
+			if (ev.type == SDL_QUIT) {
+				end = true;
+			}
+			else if (ev.type == SDL_MOUSEBUTTONUP) {
+				SDL_GetMouseState (&mouseX, &mouseY);
+
+				click = true;
+
+				if (mouseY < (int)WIN_HEIGHT / 2) { // play button
+					menu = false;
+					playScene ();
+				}
+				else { // load button
+					try {
+						menuLoadFromFile ();
+					}
+					catch (FileNotFoundError err) {
+						loadMenu ();
+						click = false;
+					}
+				}
+			} // if mouse button up
+		} // if event exists && game can still run
+	} while (!click && !end);
+}
+
+
+void Game::menuLoadFromFile () {
+	SDL_Event SDLevent;
+	stringstream numberSequence;
+	string fileName;
+	int number = -2;
+	uint iterations = 0;
+	bool click = false;
+
+	SDL_Rect destRect { 0, WIN_HEIGHT / 2, STANDARD_CELL_HEIGHT, STANDARD_CELL_HEIGHT };
+
+	renderInstructions ();
+	renderNumberButtons ();
+
+	do {
+		// get the numbers and store them in a stream + render them
+		if (SDL_PollEvent (&SDLevent)) {
+			if (SDLevent.type == SDL_QUIT) {
+				end = false;
+			}
+			if (SDLevent.type == SDL_MOUSEBUTTONUP) {
+				click = handleNumberButtons (SDLevent, number);
+			}
+		}
+
+		if (click) {
+			if (number != -1) {
+				numberSequence << number;
+
+				// render the chosen number in screen
+				destRect.x = iterations * STANDARD_CELL_HEIGHT;
+				textures[TextureNames::menuNumbers]->renderFrame (destRect, 0, number);
+				SDL_RenderPresent (renderer);
+
+				iterations++;
+			}
+			click = false;
+		}
+	} while (number != -1 && !end);
+
+	fileName = LEVELS_PATH + numberSequence.str () + LEVEL_EXTENSION;
+	
+	try { loadFromFile (numberSequence.str ()); }
+	catch (...) {
+		throw FileNotFoundError (numberSequence.str () + LEVEL_EXTENSION);
+	}
+}
+
+
+void Game::renderInstructions () {
+	SDL_Rect destRect { 0, 0, WIN_WIDTH, WIN_HEIGHT };
+	
+	SDL_RenderClear (renderer);
+
+	textures[TextureNames::instructions]->render (destRect);
+
+	SDL_RenderPresent (renderer);
+}
+
+
+void Game::renderNumberButtons () {
+	uint numbersCellSize = WIN_HEIGHT / 10;
+	SDL_Rect destRect { 0, WIN_HEIGHT - numbersCellSize, WIN_WIDTH, numbersCellSize };
+
+	textures[TextureNames::menuNumbers]->render(destRect);
+
+	SDL_RenderPresent (renderer);
+}
+
+
+bool Game::handleNumberButtons (SDL_Event SDLevent, int &number) {
+	int mouseX, mouseY;
+	int numberCellSize = WIN_WIDTH / 10;
+	int numbersY = WIN_HEIGHT - numberCellSize;
+	int index = 0;
+	bool click = false;
+
+	SDL_GetMouseState (&mouseX, &mouseY);
+
+	if ((mouseX > 0 && mouseX < numberCellSize) &&
+		(mouseY > 0 && mouseY < numberCellSize)) { // click on the finish button
+		click = true;
+		number = -1;
+	}
+	else {
+		while (!click && index < 10) {
+			if ((mouseX > (index * numberCellSize) && mouseX < ((index + 1) * numberCellSize)) &&
+				(mouseY > numbersY && mouseY < WIN_HEIGHT)) { // click on each of the numbers
+				click = true;
+				number = index;
+			}
+
+			index++;
+		} //while
+	} // else
+
+	return click;
+}
+
+
+void Game::playScene () {
 	gameObjects.push_back (new BlocksMap (this));
 
 	gameObjects.push_back (new Wall (this, textures[TextureNames::sideWall])); //leftW
@@ -33,46 +226,6 @@ Game::Game () {
 	infoBar = new InfoBar (this);
 
 	positionObjects ();
-}
-
-
-Game::~Game () {
-	for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ++it) {
-		delete (*it);
-	}
-
-	// delete playerInfoManager
-
-	for (uint i = 0; i < NUM_TEXTURES; ++i) {
-		delete textures[i];
-	}
-
-	quitSDL ();
-}
-
-
-void Game::iniSDL () {
-
-	SDL_Init(SDL_INIT_EVERYTHING); 
-	window = SDL_CreateWindow("test", WIN_X, WIN_Y, WIN_WIDTH, WIN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE); 
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); 
-	
-	if (window == nullptr || renderer == nullptr) {
-		throw SDLError(SDL_GetError());
-	}
-}
-
-
-void Game::iniTextures () {
-	string errorMsg;
-
-	for (uint i = 0; i < NUM_TEXTURES; ++i) {
-		textures[i] = new Texture(renderer, IMAGES_PATH + TEXTURE_ATTRIBUTES[i].filename, TEXTURE_ATTRIBUTES[i].rows, TEXTURE_ATTRIBUTES[i].cols);
-	}
-
-	errorMsg = SDL_GetError();
-	if (errorMsg != "")
-		throw SDLError(errorMsg);
 }
 
 
@@ -146,9 +299,14 @@ void Game::handleEvents () {
 			end = true;
 		}
 		else {
-			//paddle->handleEvents (ev);
-			for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ++it) {
-				(*it)->handleEvents (ev);
+			if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_s) {
+				string code = pickFileName ();
+				saveToFile (code);
+			}
+			else {
+				for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ++it) {
+					(*it)->handleEvents (ev);
+				}
 			}
 		}
 	}
@@ -157,9 +315,6 @@ void Game::handleEvents () {
 
 void Game::handleLevelUp () {
 	if (levelClear) {
-		//delete map;	// delete the old map and make a new one for the new level
-		//map = new BlocksMap (this);
-
 		delete (*gameObjects.begin ());// delete the old map and make to new one for the new level
 		gameObjects.erase (gameObjects.begin ());
 		gameObjects.push_front (new BlocksMap (this)); // new map
@@ -178,7 +333,6 @@ void Game::handleLevelUp () {
 		else {
 			// static cast because we know for sure that the first object is the map (it was created within this method)
 			static_cast<BlocksMap*>(*gameObjects.begin())->load (LEVEL_SHARED_NAME + to_string (currentLevel) + LEVEL_EXTENSION);
-			//map->load (LEVEL_SHARED_NAME + to_string (currentLevel) + LEVEL_EXTENSION);
 			
 			seconds = 0;
 			minutes = 0;
@@ -269,6 +423,7 @@ void Game::createReward (SDL_Rect rect) {
 		firstReward = itLastReward;
 	}
 
+	numRewards++;
 	r->setItList (itLastReward);
 }
 
@@ -280,6 +435,8 @@ void Game::killObject (itArkObjList it) {
 
 	delete *it;
 	gameObjects.erase (it);
+
+	numRewards--;
 }
 
 
@@ -314,9 +471,14 @@ void Game::update () {
 
 void Game::run () {
 	while (!end && !gameOver) {
-		render ();
-		update ();
-
+		if (menu) {
+			manageMenu ();
+			SDL_SetWindowSize (window, mapWidth, mapHeight);
+		}
+		else {
+			render ();
+			update ();
+		}
 		SDL_Delay (DELAY);
 	}
 }
@@ -328,16 +490,75 @@ void Game::quitSDL () {
 	SDL_Quit ();
 }
 
+
+string Game::pickFileName () {
+	SDL_Event sdlEvent;
+	bool done = false;
+	stringstream name;
+
+	while (!done) {
+		if (SDL_PollEvent (&sdlEvent)) {
+			if (sdlEvent.type == SDL_KEYDOWN) {
+				switch (sdlEvent.key.keysym.sym) {
+				case SDLK_0:
+					name << "0";
+					break;
+				case SDLK_1:
+					name << "1";
+					break;
+				case SDLK_2:
+					name << "2";
+					break;
+				case SDLK_3:
+					name << "3";
+					break;
+				case SDLK_4:
+					name << "4";
+					break;
+				case SDLK_5:
+					name << "5";
+					break;
+				case SDLK_6:
+					name << "6";
+					break;
+				case SDLK_7:
+					name << "7";
+					break;
+				case SDLK_8:
+					name << "8";
+					break;
+				case SDLK_9:
+					name << "9";
+					break;
+				case SDLK_RETURN:
+					done = true;
+				default:
+					break;
+				}// switch
+			}
+		}
+	}// while !done
+
+	return name.str ();
+}
+
+
 // Creates a new file with a given code and saves the current state of the game
-// +include a case in which the file already exists
 void Game::saveToFile(string code) {
 	ofstream file;
 
-	file.open (code + SAVE_EXTENSION);
+	file.open (LEVELS_PATH + code + SAVE_EXTENSION);
 	if (file.is_open()) {
 		file << currentLevel << " " << seconds << " " << minutes << " " << lastTicks << " " << currentTicks << "\n";
 
-		for (itArkObjList it = gameObjects.begin (); it != gameObjects.end (); ++it) {
+		for (itArkObjList it = gameObjects.begin (); it != firstReward; ++it) {
+			(*it)->saveToFile (file);
+			file << "\n";
+		}
+
+		file << numRewards << "\n";
+
+		for (itArkObjList it = firstReward; it != gameObjects.end (); ++it) {
 			(*it)->saveToFile (file);
 			file << "\n";
 		}
@@ -348,15 +569,52 @@ void Game::saveToFile(string code) {
 		throw FileNotFoundError (code + SAVE_EXTENSION);
 }
 
+
 void Game::loadFromFile(string code) {
 	ifstream file;
 
-	file.open(code + SAVE_EXTENSION);
+	file.open(LEVELS_PATH + code + SAVE_EXTENSION);
 	if (file.is_open()) {
-		file >> currentLevel >> seconds >> minutes >> lastTicks >> currentTicks;
+		menu = false;
 
-		for (itArkObjList it = gameObjects.begin(); it != gameObjects.end(); ++it) {
+		file >> currentLevel >> seconds >> minutes >> lastTicks >> currentTicks;
+		
+		gameObjects.push_back (new BlocksMap (this));
+
+		gameObjects.push_back (new Wall (this, textures[TextureNames::sideWall])); //leftW
+		gameObjects.push_back (new Wall (this, textures[TextureNames::sideWall])); //rightW
+		gameObjects.push_back (new Wall (this, textures[TextureNames::topWall])); //topW
+
+		gameObjects.push_back (new Ball (this));
+		ballIt = gameObjects.end(); // ballIt set past the end
+		ballIt--; // ballIt actually pointing to the position in the list
+
+		gameObjects.push_back (new Paddle (this));
+		paddleIt = gameObjects.end (); // paddleIt set past the end
+		paddleIt--; //paddleIt actually pointing to the position in the list
+
+		firstReward = gameObjects.end ();
+
+		itArkObjList it = gameObjects.begin ();
+		(*it)->loadFromFile(file); // loads map
+		++it;
+
+		infoBar = new InfoBar (this);
+
+		for (it; it != gameObjects.end(); ++it) {
 			(*it)->loadFromFile(file);
+		}
+
+		file >> numRewards;
+		firstReward = gameObjects.end ();
+
+		for (uint i = 0; i < numRewards; ++i) {
+			gameObjects.push_back (new Reward (this));
+			itArkObjList it = gameObjects.end ();
+			--it;
+
+			(*it)->loadFromFile (file);
+			static_cast<Reward*>(*it)->setItList (it);
 		}
 
 		file.close();
